@@ -65,13 +65,13 @@ SimilarityValue
 To extract those values, there is a commented out method in the verificationTool.py, that saves two files given the values predicted by the model. It can be found in the test function.
 
 # List of Used Libraries #
-Keras - 2.3.1
-Tensorflow - 2.0.0
-NumPy - 1.16.0
-OpenCV - 3.4.2.16
-Sklearn - 0.22.1
-Argparse - 1.1
-Matplotlib - 3.1.0
-Time - built into python's interpreter (python 3.6.8)
-Warnings - built into python's interpreter (python 3.6.8)
+Keras - 2.3.1<br/>
+Tensorflow - 2.0.0<br/>
+NumPy - 1.16.0<br/>
+OpenCV - 3.4.2.16<br/>
+Sklearn - 0.22.1<br/>
+Argparse - 1.1<br/>
+Matplotlib - 3.1.0<br/>
+Time - built into python's interpreter (python 3.6.8)<br/>
+Warnings - built into python's interpreter (python 3.6.8)<br/>
 OS - built into python's interpreter (python 3.6.8)
