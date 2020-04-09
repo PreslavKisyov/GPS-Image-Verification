@@ -11,5 +11,5 @@ posbestpm.txt - The positive samples for the Patch Matching method<br/>
 negbesttm.txt - The negative samples for the Template Matching method<br/>
 posbesttm.txt - The positive samples for the Template Matching method<br/>
 
-**Note:** The full paths of these files must be passed through to the thresholdTool.py script. Additionally, 
+:warning:**Note:** The full paths of these files must be passed through to the thresholdTool.py script. Additionally, 
 the negative file must be passed first, before the positive one.
