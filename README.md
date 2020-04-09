@@ -22,13 +22,13 @@ The model implements multiple arguments and commands that can be invoked by runn
 ## Predict ##
 :exclamation:**Template Matching Prediction** – python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm<br/>
 :exclamation:**Patch Matching Prediction** - python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm<br/>
-! To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
-! To change the threshold used, add the **-thr someNumber** command to either of the commands above!
+:warning:To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
+:warning:To change the threshold used, add the **-thr someNumber** command to either of the commands above!
 
 ## Test ##
 :exclamation:**Template Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm tm<br/>
 :exclamation:**Patch Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm pm<br/>
-! Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above!
+:warning:Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above!
 
 ## Extract Similarity Values to File and Plot ##
 :exclamation:**Extract Values** - python verificationTool.py -e -ed "path to query images" "path to reference images" "path to labels" -ep "path to the new text file”<br/>
@@ -46,7 +46,7 @@ The labels text file when extracting or plotting should have the following layou
 **SimilarityValue Label**<br/>
 **0.50 1**<br/>
 **0.30 0**<br/>
-The labels text file when testing should have the following layout:
+The labels text file when testing should have the following layout:<br/>
 **Query,Reference,Label**<br/>
 **queryImage.jpg,referenceImage.jpg,0**<br/>
 :warning:**Note:** The full paths are received by the other two arguments when invoking the -test command (query images path, reference images path).
@@ -54,7 +54,7 @@ The labels text file when testing should have the following layout:
 # thresholdTool User Guide #
 This is the script that iterates over multiple thresholds and picks the best one for the data provided. It requires two files. One with negative sample similarity values and one with positive ones. Additionally, the **-r** command can be invoked to reverse the order of importance. Meaning, lower values will be better. This mode can be invoked depending on the similarity measure used for extracting the similarity values.<br/>
 :exclamation:**Get Best Threshold Default** – python thresholdTool.py -a “path to negative text file” “path to positive text file”<br/>
-! An extra argument can be added that specifies the location of where the produced plot graph will be saved. If not specified, it will be saved to a **default.jpg** image!<br/>
+:warning:An extra argument can be added that specifies the location of where the produced plot graph will be saved. If not specified, it will be saved to a **default.jpg** image!<br/>
 :exclamation:**Get Best Threshold Reverse Order** - python thresholdTool.py -a “path to negative text file” “path to positive text file” “path to a new jpg file” -r
 
 ### Additional Information ###
