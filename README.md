@@ -8,7 +8,7 @@ that value against a threshold.
 - The image verification is performed by running the **verificationTool.py**
 
 # Installation #
-Python 3 is required in conjunction with '**pip**'.
+**Python 3** is required in conjunction with '**pip**'.
 To install all libraries run - **pip install -r requirements.txt**
 This will get all the requirements needed and install them recursively.
 Additionally, the requirements can be installed manually. An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. The fix is rather simple. The gast library must be removed and then installed again:
