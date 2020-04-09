@@ -14,7 +14,7 @@ This will get all the requirements needed and install them recursively.
 Additionally, the requirements can be installed manually. An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. The fix is rather simple. The gast library must be removed and then installed again:<br/>
 :exclamation:**pip uninstall gast**<br/>
 :exclamation:**pip install gast**<br/>
-**Note:** For some systems, administrator privileges might be required.<br/>
+:warning:**Note:** For some systems, administrator privileges might be required.<br/>
 
 # verificationTool User Guide #
 The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the ‘Test’ folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
@@ -38,7 +38,7 @@ The **--plot** command is used with the **-ep** command. Here the **-ep** comman
 
 ## SURF ##
 To use the SURF method, simply invoke the **-s** command after either any of the prediction or testing commands. It would invoke the SURF method that is also described and referenced in the paper of this project.<br/>
-**Note:** It does not use any of the methods invoked from the -mm command. Thus, it must be omitted.<br/>
+:warning:**Note:** It does not use any of the methods invoked from the -mm command. Thus, it must be omitted.<br/>
 :exclamation: python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -s
 
 ### Additional Information ###
@@ -49,7 +49,7 @@ The labels text file when extracting or plotting should have the following layou
 The labels text file when testing should have the following layout:
 **Query,Reference,Label**<br/>
 **queryImage.jpg,referenceImage.jpg,0**<br/>
-**Note:** The full paths are received by the other two arguments when invoking the -test command (query images path, reference images path).
+:warning:**Note:** The full paths are received by the other two arguments when invoking the -test command (query images path, reference images path).
 
 # thresholdTool User Guide #
 This is the script that iterates over multiple thresholds and picks the best one for the data provided. It requires two files. One with negative sample similarity values and one with positive ones. Additionally, the **-r** command can be invoked to reverse the order of importance. Meaning, lower values will be better. This mode can be invoked depending on the similarity measure used for extracting the similarity values.<br/>
