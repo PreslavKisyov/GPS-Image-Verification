@@ -1,4 +1,4 @@
-##### THIS IS THE README FOR THE IMAGES FOLDER #####
+# THIS IS THE README FOR THE IMAGES FOLDER #
 This folder contains 4 test images which the model can be tested on. The images are grouped in two
 pairs - Query and Reference, and they must be passed in that order through the verificationTool.py model.
 The images are picked to test both Template Matching and Patch Matching methods.
