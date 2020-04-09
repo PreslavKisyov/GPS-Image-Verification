@@ -57,7 +57,7 @@ Get Best Threshold Default – python thresholdTool.py -a “path to negative te
 ! An extra argument can be added that specifies the location of where the produced plot graph will be saved. If not specified, it will be saved to a default.jpg image!
 Get Best Threshold Reverse Order - python thresholdTool.py -a “path to negative text file” “path to positive text file” “path to a new jpg file” -r
 
-## Additional Information ##
+### Additional Information ###
 Both files must be passed through in that exact order. The negative file comes before the positive one, as shown in the examples above. Both files should have the following layout:
 SimilarityValue
 0.50
