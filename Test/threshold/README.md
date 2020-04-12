@@ -1,7 +1,7 @@
 # THIS IS THE README FILE FOR THE THRESHOLD FOLDER #
 
 This folder has 4 separate text files that contain the values obtained from running the best configurations
-on both Patch Matching and Template Matching methods. Each method has a negative and a positve file, which contains the
+on both Patch Matching and Template Matching methods. Each method has a negative and a positive file, which contains the
 corresponding negative or positive sample predictions. These files are meant to be run by the thresholdTool.py script, and should
 produce the same graphs as in the paper of the project. The files are:
 

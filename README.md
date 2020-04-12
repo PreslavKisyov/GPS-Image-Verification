@@ -9,7 +9,14 @@ that value against a threshold.<br/>
 
 # Installation #
 **Python 3** is required in conjunction with '**pip**'.<br/>
-To install all libraries run - **pip install -r requirements.txt**<br/>
+**Python 3** can be downloaded from **https://www.python.org/downloads/**. 
+The version used in this project is 3.6.8.
+The guide to installing **pip** can be found on the following website - **https://pip.pypa.io/en/stable/installing/**.
+Moreover, the **pip** file is provided in the main directory of the project. It is called **get-pip.py**.
+The command to install that file is as follows:<br/>
+- **python get-pip.py**<br/>
+For more installation options, the provided guide above can be referenced.<br/>
+To install all libraries run - **pip install -r requirements.txt**.<br/>
 This will get all the requirements needed and install them recursively.
 Additionally, the requirements can be installed manually. An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. The fix is rather simple. The gast library must be removed and then installed again:<br/>
 - **pip uninstall gast**<br/>
@@ -44,6 +51,7 @@ To use the SURF method, simply invoke the **-s** command after either any of the
 ### Additional Information ###
 The labels text file when extracting or plotting should have the following layout:<br/>
 **SimilarityValue Label**<br/>
+
 **0.50 1**<br/>
 **0.30 0**<br/>
 The labels text file when testing should have the following layout:<br/>
@@ -60,9 +68,10 @@ This is the script that iterates over multiple thresholds and picks the best one
 ### Additional Information ###
 Both files must be passed through in that exact order. The negative file comes before the positive one, as shown in the examples above. Both files should have the following layout:<br/>
 **SimilarityValue**<br/>
+
 **0.50**<br/>
 **0.60**<br/>
-To extract those values, there is a commented out method in the **verificationTool.py**, that saves two files given the values predicted by the model. It can be found in the **test** function.
+To extract those values, there is a commented-out method in the **verificationTool.py**, that saves two files given the values predicted by the model. It can be found in the **test** function.
 
 # List of Used Libraries #
 **Keras** - 2.3.1<br/>
