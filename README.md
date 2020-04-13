@@ -8,17 +8,26 @@ that value against a threshold.<br/>
 - The image verification is performed by running the **verificationTool.py**<br/>
 
 # Installation #
-**Python 3** is required in conjunction with '**pip**'.<br/>
+**Python 3** is required for this project. The version used in this project is 3.6.8.
 **Python 3** can be downloaded from **https://www.python.org/downloads/**. 
-The version used in this project is 3.6.8.
+There are two ways to install the project:
+1) Run the **setup.py** file present in the main directory of the project.
+The command is - **python setup.py install**.
+**Note:** If python 2 is also present on the machine, the command should
+look like - **python3 setup.py install**. And that would be valid for all the commands in this project.
+2) If the previous method did not work, there is an alternative.
+It uses '**pip**', and more specifically **pip3**, as python 3 is used.<br/>
 The guide to installing **pip** can be found on the following website - **https://pip.pypa.io/en/stable/installing/**.
-Moreover, the **pip** file is provided in the main directory of the project. It is called **get-pip.py**.
+Moreover, the **pip** file is provided in the main directory of the project. It is called **get-pip.py**, and it has been provided by the url mentioned above.
 The command to install that file is as follows:<br/>
 - **python get-pip.py**<br/>
 For more installation options, the provided guide above can be referenced.<br/>
 To install all libraries run - **pip install -r requirements.txt**.<br/>
 This will get all the requirements needed and install them recursively.
-Additionally, the requirements can be installed manually. An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. The fix is rather simple. The gast library must be removed and then installed again:<br/>
+Additionally, the requirements can be installed manually. <br/>
+An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. <br/>
+The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. <br/>
+The fix is rather simple. The gast library must be removed and then installed again:<br/>
 - **pip uninstall gast**<br/>
 - **pip install gast**<br/>
 :warning:**Note:** For some systems, administrator privileges might be required.<br/>

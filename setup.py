@@ -4,7 +4,7 @@ setup(
     name='GPS-Image-Verification',
     version='1.1',
     packages=[''],
-    url='',
+    url='https://github.com/PreslavKisyov/GPS-Image-Verification',
     license='Public',
     author='Preslav Kisyov',
     author_email='preslav.kisyov@kcl.ac.uk',
