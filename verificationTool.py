@@ -56,10 +56,14 @@ class ImageVerificationTool:
     # @return The query feature vector
     # @return The reference feature vector
     def get_features(self, query_image, refer_image):
-        query_features, refer_features = self.resnet.predict(query_image)[0], self.resnet.predict(refer_image)[0]
-        sizes = [[query_features.shape[0], query_features.shape[1]], [refer_features.shape[0], refer_features.shape[1]]]
-        query_reshaped = query_features.reshape(query_features.shape[0] * query_features.shape[1], query_features.shape[2])
-        refer_reshaped = refer_features.reshape(refer_features.shape[0] * refer_features.shape[1], refer_features.shape[2])
+        query_features = self.resnet.predict(query_image)[0]
+        refer_features = self.resnet.predict(refer_image)[0]
+        sizes = [[query_features.shape[0], query_features.shape[1]],
+                 [refer_features.shape[0], refer_features.shape[1]]]
+        query_reshaped = query_features.reshape(query_features.shape[0] *
+                        query_features.shape[1], query_features.shape[2])
+        refer_reshaped = refer_features.reshape(refer_features.shape[0] *
+                        refer_features.shape[1], refer_features.shape[2])
         return query_reshaped, refer_reshaped, sizes
 
     # Perform Correlation Coefficient on two feature vectors
