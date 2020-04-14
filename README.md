@@ -18,7 +18,7 @@ look like - **python3 setup.py install**. And that would be valid for all the co
 2) If the previous method did not work, there is an alternative.
 It uses '**pip**', and more specifically **pip3**, as python 3 is used.<br/>
 The guide to installing **pip** can be found on the following website - **https://pip.pypa.io/en/stable/installing/**.
-Moreover, the **pip** file is provided in the main directory of the project. It is called **get-pip.py**, and it has been provided by the url mentioned above.
+The file is called **get-pip.py**, and it can be downloaded by the url mentioned above.
 The command to install that file is as follows:<br/>
 - **python get-pip.py**<br/>
 For more installation options, the provided guide above can be referenced.<br/>

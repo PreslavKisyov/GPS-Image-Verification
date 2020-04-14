@@ -1,7 +1,6 @@
 import argparse
 import cv2
 import numpy as np
-from keras.applications.resnet import ResNet50, preprocess_input
 import matplotlib
 import matplotlib.pyplot as plt
 import time
@@ -30,6 +29,31 @@ class ImageVerificationTool:
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     warnings.simplefilter(action='ignore', category=FutureWarning)
 
+    # This function picks the CNN to be used
+    # for feature extraction depending on the argument
+    # passed through to the model
+    #
+    # @param model The model to be used
+    def pick_model(self, model):
+        # Initialise the model depending on the provided arg
+        # Note: Default is always ResNet50, so it cannot be None
+        if model == "resnet50":
+            from keras.applications.resnet import ResNet50, preprocess_input
+            self.resnet = ResNet50(include_top=False, weights="imagenet")
+        elif model == "resnet101":
+            from keras.applications.resnet import ResNet101, preprocess_input
+            self.resnet = ResNet101(include_top=False, weights="imagenet")
+        elif model == "resnet152":
+            from keras.applications.resnet import ResNet152, preprocess_input
+            self.resnet = ResNet152(include_top=False, weights="imagenet")
+        elif model == "vgg19":
+            from keras.applications.vgg19 import VGG19, preprocess_input
+            self.resnet = VGG19(include_top=False, weights="imagenet")
+        elif model == "inception":
+            from keras.applications.inception_resnet_v2 import InceptionResNetV2, preprocess_input
+            self.resnet = InceptionResNetV2(include_top=False, weights="imagenet")
+        self.preprocess_input = preprocess_input
+
     # Import the query and reference images as an array
     #
     # @param query_path The path to the query image
@@ -47,7 +71,7 @@ class ImageVerificationTool:
     # @return The pre-processed image of shape (1, h, w, 3)
     def process_image(self, image):
         img = np.expand_dims(image, axis=0)
-        return preprocess_input(img.astype(np.float32))
+        return self.preprocess_input(img.astype(np.float32))
 
     # Extract feature vectors from two images using a ResNet
     #
@@ -490,9 +514,7 @@ class ImageVerificationTool:
     def show_progress(self, num_of_pred, total_pred):
         current_status = int(round(50 * num_of_pred / float(total_pred)))
         per = round(100.0 * num_of_pred / float(total_pred), 1)
-        #print("\u0332" * 52, end="\n", flush=True)
         print("[" + '=' * current_status+ "-" * (50 - current_status) + "] "+str(per) + "%", end="\n", flush=True)
-        #print("\u0305" * 52, end="\n", flush=True)
 
     # Get the finish time of a process
     #
@@ -514,13 +536,15 @@ class ImageVerificationTool:
     # @param threshold A threshold value
     # @param print_mask A boolean value specifying whether to show a likelihood map or not
     # @param match_method A string specifying the matching method (tm or pm)
+    # @param model The CNN used to extract features
     def __init__(self, extr_path, extract, extr_dataset, plot,
-                 threshold, print_mask, match_method, surf):
-        self.resnet = ResNet50(include_top=False, weights="imagenet") # Initialize ResNet
+                 threshold, print_mask, match_method, surf, model):
+        self.pick_model(model)
         self.threshold, self.predict_method, self.match_method = threshold, "threshold", match_method
         self.extract, self.knn, self.print_mask, self.surf = extract, None, print_mask, surf
         print("Initializing tool with: threshold = " + str(threshold) + " | predict_method = " +
-              self.predict_method + " | match_method = " + match_method + " | SURF = " + str(surf))
+              self.predict_method + " | match_method = " + match_method + " | SURF = " + str(surf) +
+            " | model = " + str(model))
 
         # Try to generate an extraction file
         if extract:
@@ -577,6 +601,7 @@ if __name__ == '__main__':
                         nargs=2)
     parser.add_argument('-s', '--surf', help="Toggle surf comparison mode True or False. For False just omit command.",
                         type=str_converter, nargs='?', default=False, const=True)
+    parser.add_argument('--model', choices=['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception'], nargs=1, default='resnet50')
     # Get a dictionary of parser arguments
     args = parser.parse_args()
     args_dict = vars(args)
