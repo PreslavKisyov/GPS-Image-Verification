@@ -7,7 +7,6 @@ import time
 import warnings
 from sklearn.feature_extraction import image
 import os.path
-from os import path
 import keras
 import tensorflow
 import sklearn
@@ -418,7 +417,7 @@ class ImageVerificationTool:
 
         # Create an extraction file with values
         try:
-            if path.exists(dataset_path): print("Extraction file already exists! Overwriting file...!")
+            if os.path.exists(dataset_path): print("Extraction file already exists! Overwriting file...!")
             with open(dataset_path, 'w') as f:
                 for item in range(len(extr_features)):
                     feature = str(extr_features[item])
@@ -513,11 +512,14 @@ class ImageVerificationTool:
                 lines = f.readlines()
                 for line in lines:
                     line_split = line.split(',')
+                    if len(line_split) < 3:
+                        print("Unsupported labels format!")
+                        exit(0)
                     query_image, ref_image, label = line_split[0], line_split[1], int(line_split[2].split("\n")[0])
                     dataset.append([pathQ+query_image, pathR+ref_image, label])
             f.close()
         except IOError:
-            print("File " + path + " not found!")
+            print("File not found!")
             raise
 
         return dataset
@@ -527,7 +529,7 @@ class ImageVerificationTool:
     # @param test_dataset A list of Q, R, L paths
     # @return The results of testing
     def test_tool(self, test_dataset):
-        if not self.check_file(test_dataset): return
+        if not self.check_file([test_dataset[2]]): return
         self.isTest = True
         data = self.load_dataset(test_dataset[0], test_dataset[1], test_dataset[2])
         return self.test(data)
@@ -556,6 +558,7 @@ class ImageVerificationTool:
         length_data = len(data)
         print("Testing using threshold...")
         for pair in data:
+            if not self.check_file(pair): return
             pred, similarity, comp_time = self.predict(pair[0], pair[1])
             print("REF: ", pair[1], " QUERY: ", pair[0])
             print("PRED: ", str(pred), " AND LABEL: ", str(pair[-1]), "\n")
@@ -604,6 +607,23 @@ class ImageVerificationTool:
             print("The query image is present on the reference image with similarity: "+str(similarity)+"!\n")
         else: print("The query image is NOT present on the reference image with similarity: "+str(similarity)+"!\n")
 
+    # This function performs a check on the extension
+    # of a file. If the extension is not supported, then
+    # the code will exit!
+    #
+    # @param pathQ The path to the query image
+    # @param pathR The path to the reference image
+    # @return True if extensions are correct else False
+    def check_file_extension(self, pathQ="", pathR=""):
+        isExtQ, isExtR = False, False
+        for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
+            if ext in pathQ: isExtQ = True
+            if ext in pathR: isExtR = True
+        if not isExtQ or not isExtR:
+            print("Not supported file format!")
+            return False
+        else: return True
+
     # Get prediction based on the result of performing
     # Image Verification with different methods
     #
@@ -613,13 +633,7 @@ class ImageVerificationTool:
     # @return similarity The similarity value for the current prediction
     # @return The time that the prediction took to complete
     def predict(self, pathQ, pathR):
-        isExtQ, isExtR = False, False
-        for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
-            if ext in pathQ: isExtQ = True
-            if ext in pathR: isExtR = True
-        if not isExtQ or not isExtR:
-            print("Not supported file format!")
-            return
+        if not self.check_file_extension(pathQ, pathR): return
         if not self.check_file([pathQ, pathR]): return
         self.comp_time = time.time()  # Start counting time
         similarity = self.get_max_similarity(pathQ, pathR)
