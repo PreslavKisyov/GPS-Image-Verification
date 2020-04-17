@@ -38,13 +38,19 @@ The model implements multiple arguments and commands that can be invoked by runn
 ## Predict ##
 :exclamation:**Template Matching Prediction** – python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm<br/>
 :exclamation:**Patch Matching Prediction** - python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm<br/>
+:warning:Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**.<br/>
+For the first command the choices are - ['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception']. The default is resnet50.<br/>
+An example would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm --model resnet152<br/>
+The second command (**--measure**) has 3 choices - ['cc', 'cs', 'ssd']. These choices represent Correlation Coefficient, Cosine Similarity and Sum of Squared Differences respectively.
+**The Sum of Squared Differences** requires the threshold to be changed accordingly because of its undefined range of values. That might be the threshold having a bigger value than 1. <br/>
+An example of that command would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm pm --model vgg19 --measure cs<br/>
 :warning:To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
 :warning:To change the threshold used, add the **-thr someNumber** command to either of the commands above!
 
 ## Test ##
 :exclamation:**Template Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm tm<br/>
 :exclamation:**Patch Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm pm<br/>
-:warning:Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above!
+:warning:Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above, as well as change the model or similarity measure used!
 
 ## Extract Similarity Values to File and Plot ##
 :exclamation:**Extract Values** - python verificationTool.py -e -ed "path to query images" "path to reference images" "path to labels" -ep "path to the new text file”<br/>
@@ -80,7 +86,62 @@ Both files must be passed through in that exact order. The negative file comes b
 
 **0.50**<br/>
 **0.60**<br/>
-To extract those values, there is a commented-out method in the **verificationTool.py**, that saves two files given the values predicted by the model. It can be found in the **test** function.
+To extract those values, there is a commented-out method in the **verificationTool.py**, that saves two files given the values predicted by the model. 
+It can be found in the **test** function. 
+Additionally, the path files of the two files can be changed in the acutal function:<br/>
+# Uncomment to write samples to file<br/>
+# self.write_samples_to_file(neg, pos)<br/>
+Here the seconf line must be uncommented in order to enable the function. In the following code, the path of the two files
+can be changed: <br/>
+def write_samples_to_file(self, neg, pos):<br/>
+     with open('./negative.txt', 'w') as f:<br/>
+         for item in neg:<br/>
+             f.write(str(item)+"\n")<br/>
+         f.close()<br/>
+     with open('./positive.txt', 'w') as f:<br/>
+         for item in pos:<br/>
+             f.write(str(item)+"\n")<br/>
+         f.close()<br/>
+#Testing Datasets – Download & Evaluation#
+To download the **Caltech Buildings dataset**, the following URL must be followed - **http://www.mohamedaly.info/datasets/caltech-buildings**<br/>
+There, a download link could be found. The dataset is 195MB. A labels text file will be provided in the **Datasets** folder of the project. The file is called **labels.txt**. <br/>
+To test on that dataset (for the best configuration) the following command can be executed:<br/>
+**python verificationTool.py --test ./caltech-buildings/ ./caltech-buildings/ ./Datasets/Caltech/labels.txt -mm tm -thr 0.679**<br/>
+To download the **Wiki_Commons** dataset is trickier. 
+The authors of the **BUPM** paper has provided the required files as well as the download guide for their dataset. <br/>
+It can be found at this URL **https://gitlab.vista.isi.edu/chengjia/image-GPS**<br/>
+Some of the images might be corrupted or removed from the database, hence they need to be removed from the respective folders. 
+The query images must be separated from the reference images as they have the same names. <br/>
+They must be put in two separate folders. Because the **Google API** is a paid service, the following tool can be used to download the reference images - **https://svd360.istreetview.com/**
+Additionally, the labels.txt file can be found under the WikiCommons in the **Datasets** folder. 
+To run the best recorded configuration, the following command can be executed:<br/>
+python verificationTool.py --test ./wiki_commons/queries/ ./wiki_commons/references/ ./Datasets/WikiCommons/labels.txt -mm pm -thr 0.652<br/>
+The commands that execute testing for both datasets can be altered to match the actual file paths, as they are only given as an example. 
+If the datasets are downloaded not in the main directory of the project, then the paths to them must be changed accordingly. 
+Additionally, there is an alternative method of downloading both datasets. 
+The following **URL** can be followed to download both datasets used immediately:<br/>
+**https://emckclacmy.sharepoint.com/:f:/g/personal/k1763856_kcl_ac_uk/EiSS6CNIVuRFudp28yFeRfwBUgyjEnLCA_8E nWeGMwo94g?e=ctSrOB** <br/>
+It contains two folders called "caltech-buildings" and "wiki_commons" respectively. 
+They contain the images used for testing this model. The whole folders must be downloaded, so the commands described above can be executed without errors. 
+The naming of the folders is already set to the one used for the commands. If the former methods are chosen then it 
+must be noted that not all images from the **Wiki_Commons** dataset have been used, as also stated in **Chapter 4 of the paper**. 
+Additionally, some of the images might not be able to download. 
+Therefore, the former method is preferred, as all the images are provided at a single One Drive location. 
+
+##Additional Information##
+The paths files provided in both commands can vary depending on where the datasets have been downloaded and how have they been named. Moreover, the paper can be followed in order to change the configurations to match the runs tested in the paper. Every figure in Chapter 4 (Evaluation) provides information about the configuration.
+Arguments Limitation in Testing<br/>
+There are certain limitations to the arguments that the model accepts. In order to fully replicate the test runs provided in the paper, some of the code must be changed. For instance, if the configuration is about the Patch Matching method, the following lines of code can be modified:
+**imgQ = cv2.resize(queryImg, (int(queryImg.shape[1] * float(0.15)), int(queryImg.shape[0] * float(0.15))), interpolation=cv2.INTER_AREA)**<br/>
+**patches = image.extract_patches_2d(referImg, (224, 224), max_patches=250)**<br/>
+All lines can be found under the patch_matching function. The first line defines the size by which the query image is resized. 
+For instance, if the configuration says that the query image has been resized by 20% then the float 0.15 must be changed to 0.20. The third line defines the number of patches used (max_patches). If the configuration uses 150 patches then the 250 must be changed respectively.
+If the Template Matching is being used, then several other things must be changed. The lines that must be change can be found under the template_matching function:<br/>
+**if sum(queryImg.shape) > sum(referImg.shape):**<br/>
+    **scales = [10, 12, 14, 16, 18, 20]**<br/>
+**else: scales = [22, 24, 26, 28, 30]**<br/>
+For instance, if the configuration uses only one scale range then all lines must be removed and replaced with only:<br/>
+**scales = [13,14,15,16,17]** // Depending on the configuration selected<br/>
 
 # List of Used Libraries #
 **Keras** - 2.3.1<br/>

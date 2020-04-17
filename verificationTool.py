@@ -82,8 +82,10 @@ class ImageVerificationTool:
     def get_features(self, query_image, refer_image):
         query_features = self.resnet.predict(query_image)[0]
         refer_features = self.resnet.predict(refer_image)[0]
+
         sizes = [[query_features.shape[0], query_features.shape[1]],
                  [refer_features.shape[0], refer_features.shape[1]]]
+
         query_reshaped = query_features.reshape(query_features.shape[0] *
                         query_features.shape[1], query_features.shape[2])
         refer_reshaped = refer_features.reshape(refer_features.shape[0] *
@@ -104,12 +106,12 @@ class ImageVerificationTool:
         # Normalize query vector
         query = np.transpose(query)
         query_v = np.sum(np.square(query), axis=0, keepdims=True)
-        #
-        # # Normalize refer vector
+
+        # Normalize refer vector
         refer_v = np.sum(np.square(refer), axis=1, keepdims=True)
 
         # Get denominator
-        denominator = np.sqrt(np.multiply(refer_v, query_v))
+        denominator = np.multiply(np.sqrt(refer_v), np.sqrt(query_v))
         if np.sum(denominator) == 0: denominator = 1 # Make sure no division by 0 occurs
 
         # Get Dot Product
@@ -118,6 +120,47 @@ class ImageVerificationTool:
         # Getting Correlation coefficient
         cc = np.divide(product, denominator)
         return cc
+
+    # Perform Cosine Similarity on two feature vectors
+    # in order to get a similarity vector with best matching features
+    #
+    # @param query_f The query feature vector
+    # @param refer_f The reference feature vector
+    # @return cs The Cosine Similarity vector
+    def get_cs(self, query_f, refer_f):
+        # Normalize query vector
+        query = np.transpose(query_f)
+        query_v = np.sum(np.square(query), axis=0, keepdims=True)
+
+        # Normalize refer vector
+        refer_v = np.sum(np.square(refer_f), axis=1, keepdims=True)
+
+        # Get denominator
+        denominator = np.multiply(np.sqrt(refer_v), np.sqrt(query_v))
+        if np.sum(denominator) == 0: denominator = 1  # Make sure no division by 0 occurs
+
+        # Get Dot Product
+        product = np.dot(refer_f, query)
+
+        # Getting Cosine Similarity
+        cs = np.divide(product, denominator)
+        print(cs.shape)
+        return cs
+
+    # Perform the Sum of Squared Differences on two feature vectors
+    # in order to get a similarity vector with best matching features
+    #
+    # @param query_f The query feature vector
+    # @param refer_f The reference feature vector
+    # @return ssd The Sum of Squared Differences vector
+    def get_ssd(self, query_f, refer_f):
+        # pad the vector so it can be subtracted
+        d = refer_f[:, None] - query_f
+
+        # Getting Sum of Squared Differences
+        ssd = np.sum(np.square(d), axis=-1)
+
+        return ssd
 
     # Extract the likelihood maps for two images
     # from a similarity vector with shape (h*w, h1*w1)
@@ -128,13 +171,32 @@ class ImageVerificationTool:
     # @return refer_mask The reference feature mask
     def get_masks(self, similarity_v, sizes):
         # Extract best features from the two axes of the similarity vector
-        query_mask = np.max(similarity_v, axis=0)
-        refer_mask = np.max(similarity_v, axis=1)
-
+        if self.measure == "ssd":
+            # Get the lowest values
+            query_mask = np.min(similarity_v, axis=0)
+            refer_mask = np.min(similarity_v, axis=1)
+        else:
+            # Get the biggest values
+            query_mask = np.max(similarity_v, axis=0)
+            refer_mask = np.max(similarity_v, axis=1)
         # Reshape the masks to be of two dimensions so they can be shown as images
         query_mask = query_mask.reshape(sizes[0][0], sizes[0][1])
         refer_mask = refer_mask.reshape(sizes[1][0], sizes[1][1])
         return query_mask, refer_mask
+
+    # This function extracts the starting and ending
+    # points of the query image for it to be presented
+    # on the reference image
+    #
+    # @param loc The location of the object
+    # @param w The width of the query image
+    # @param h The height of the query image
+    # @param scale The scale to have the query mask dimensions reduced
+    # @return first_point, second_point The starting and ending points
+    def get_points(self, loc, w, h, scale=1):
+        first_point = (int(loc[0] - w / scale), int(loc[1] - h / scale))
+        second_point = (int(loc[0] + w / scale), int(loc[1] + h / scale))
+        return first_point, second_point
 
     # Show the query and reference masks using matplotlib,
     # as well as their original images
@@ -142,18 +204,20 @@ class ImageVerificationTool:
     # @param images The two original images
     # @param masks The two mask vectors
     # @param patch If available, a patch reference image
-    # @param scale The scale to have the query mask dimensions reduced
-    def print_masks(self, images, masks, patch, scale=1):
+    def print_masks(self, images, masks, patch):
         q_mask, r_mask = masks
 
         # If a patch is not available, draw a likelihood object rectangle
         # on the reference image, showing the best matched location
         if patch is None:
             w, h = q_mask.shape[::-1]  # Query image
-            _, _, _, maxLoc = cv2.minMaxLoc(r_mask)
-            first_point = (int(maxLoc[0] - w / scale), int(maxLoc[1] - h / scale))
-            second_point = (int(maxLoc[0] + w / scale), int(maxLoc[1] + h / scale))
-            cv2.rectangle(r_mask, first_point, second_point, 255, -1)
+            if self.measure == "ssd":
+                _, _, loc, _ = cv2.minMaxLoc(r_mask)
+                first_point, second_point = self.get_points(loc, w, h)
+            else:
+                _, _, _, loc = cv2.minMaxLoc(r_mask)
+                first_point, second_point = self.get_points(loc, w, h)
+            cv2.rectangle(r_mask, first_point, second_point, 255, -1)  # Draw the object
         else: r_mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY) # Show the patch image instead
 
         # Plot the query and reference masks as well as their original images
@@ -192,6 +256,7 @@ class ImageVerificationTool:
     # @return patch The best matched patch image
     def patch_matching(self, queryImg, referImg):
         maxSimilarity, bestSizes, bestCC = 0, [], None
+        minSimilarity = float('inf')
         best_patch = None
         # Resize/Pre-process query image
         imgQ = cv2.resize(queryImg, (int(queryImg.shape[1] * float(0.15)), int(queryImg.shape[0] * float(0.15))), interpolation=cv2.INTER_AREA)
@@ -205,23 +270,38 @@ class ImageVerificationTool:
             # Perform Correlation Coefficient and extract similarity value
             maxSim, cc = self.get_max_value(query_f, refer_f)
             # Update values to the best ones so far
-            if maxSim >= maxSimilarity:
-                maxSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
+            if self.measure != "ssd":
+                if maxSim >= maxSimilarity:
+                    maxSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
+            else:
+                if maxSim <= minSimilarity:
+                    minSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
             # Stop performing the method if a match has been found
             if self.check_max_similarity(maxSim): break
-        return maxSimilarity, bestCC, bestSizes, best_patch
+        return [maxSimilarity, bestCC, bestSizes, best_patch] if self.measure != "ssd" else [minSimilarity, bestCC, bestSizes, best_patch]
 
-    # Perform the Correlation Coefficient method
-    # and extract the maximum value from the similarity vector
+    # Perform the picked Similarity Measure method
+    # and extract the maximum/minimum value from the similarity vector
     #
     # @param query_f The query feature vector
     # @param refer_f The reference feature vector
-    # @return A rounded maximum similarity value
-    # @return The Correlation Coefficient vector
+    # @return A rounded similarity value
+    # @return The Similarity Measure vector
     def get_max_value(self, query_f, refer_f):
-        cc = self.get_cc(query_f, refer_f)
-        _, maxSim, _, _ = cv2.minMaxLoc(cc)
-        return round(maxSim, 3), cc
+        # Pick the Similarity Measure to be used given the passed
+        # argument. The measure will never be None as it has default value
+        measure = None
+        if self.measure == "cc":
+            measure = self.get_cc(query_f, refer_f)
+            _, sim, _, _ = cv2.minMaxLoc(measure)
+        elif self.measure == "cs":
+            measure = self.get_cs(query_f, refer_f)
+            _, sim, _, _ = cv2.minMaxLoc(measure)
+        elif self.measure == "ssd":
+            measure = self.get_ssd(query_f, refer_f)
+            sim, _, _, _ = cv2.minMaxLoc(measure)
+
+        return round(sim, 3), measure
 
     # Perform the Template Matching technique variation on a query and reference image.
     # This method rescales the query image to different sizes, using it as a template in order
@@ -237,6 +317,7 @@ class ImageVerificationTool:
             scales = [10, 12, 14, 16, 18, 20]
         else: scales = [22, 24, 26, 28, 30]
         maxSimilarity, bestSizes, bestCC = 0, [], None
+        minSimilarity = float('inf')
         imgR = self.process_image(referImg)
         for scale in scales:
             query = self.get_query_image(queryImg, scale)
@@ -244,23 +325,31 @@ class ImageVerificationTool:
             query_f, refer_f, sizes = self.get_features(query, imgR)
             # Perform Correlation Coefficient and extract similarity value
             maxSim, cc = self.get_max_value(query_f, refer_f)
+
             # Update values to the best ones so far
-            if maxSim >= maxSimilarity:
-                maxSimilarity, bestCC, bestSizes = maxSim, cc, sizes
+            if self.measure != "ssd":
+                if maxSim >= maxSimilarity:
+                    maxSimilarity, bestCC, bestSizes = maxSim, cc, sizes
+            else:
+                if maxSim <= minSimilarity:
+                    minSimilarity, bestCC, bestSizes = maxSim, cc, sizes
+
             # Stop performing the method if a match has been found
             if self.check_max_similarity(maxSim): break
-        return maxSimilarity, bestCC, bestSizes
+
+        return [maxSimilarity, bestCC, bestSizes] if self.measure != "ssd" else [minSimilarity, bestCC, bestSizes]
 
     # Perform a check whether further iteration of either
     # the image scales or patches is required.
     #
-    # @param maxSim The current maximum similarity value
+    # @param maxSim The current best similarity value
     # @return False If further iterations are required
     # @return True If the iteration process should stop
     def check_max_similarity(self, maxSim):
-        if self.extract or self.print_mask: return False  # Do whole iterations when extracting values
+        if self.extract or self.print_mask or self.isTest: return False  # Do whole iterations when extracting values
         # Predict against threshold
-        if maxSim >= self.threshold: return True
+        if self.measure != "ssd": return True if maxSim >= self.threshold else False
+        else: return True if maxSim <= self.threshold else False
 
     # Get the best maximum similarity value by performing different
     # matching methods, depending on the choice
@@ -278,6 +367,10 @@ class ImageVerificationTool:
             gray_imgR = cv2.resize(gray_imgR,
                                   (int(gray_imgR.shape[1] * float(0.80)), int(gray_imgR.shape[0] * float(0.80))),
                                   interpolation=cv2.INTER_AREA)
+
+            # The following code has been taken from OpenCV. The code is patented, thus it must not be
+            # used for distribution or commercial use. The code can also be found at - https://docs.opencv.org/trunk/da/df5/tutorial_py_sift_intro.html
+            # The paper of the method is Speeded-Up Robust Features (SURF), with authors - Herbert Bay, Andreas Ess, Tinne Tuytelaars, and Luc Van Gool
             surf = cv2.xfeatures2d.SURF_create()
             # Extract features
             _, q_features = surf.detectAndCompute(gray_imgQ, None)
@@ -291,11 +384,14 @@ class ImageVerificationTool:
             else: best_max_sim, bestCC, bestSizes, patch = self.patch_matching(imgQ, imgR)
 
             # Extract and draw image masks
-            if self.print_mask and best_max_sim >= self.threshold:
-                images = [cv2.imread(path_q), cv2.imread(path_r)]
-                mask_q, mask_r = self.get_masks(bestCC, bestSizes)
-                self.print_masks(images, [mask_q, mask_r], patch)
-        print("MAX SIMILARITY: ", best_max_sim)
+            if self.print_mask:
+                if (best_max_sim >= self.threshold and self.measure != "ssd") or \
+                    (best_max_sim <= self.threshold and self.measure == "ssd"):
+                    images = [cv2.imread(path_q), cv2.imread(path_r)]
+                    mask_q, mask_r = self.get_masks(bestCC, bestSizes)
+                    self.print_masks(images, [mask_q, mask_r], patch)
+
+        print("BEST SIMILARITY: ", best_max_sim)
         return best_max_sim
 
     # Generate a file that can be used to visualise data
@@ -431,20 +527,34 @@ class ImageVerificationTool:
     # @param test_dataset A list of Q, R, L paths
     # @return The results of testing
     def test_tool(self, test_dataset):
+        if not self.check_file(test_dataset): return
+        self.isTest = True
         data = self.load_dataset(test_dataset[0], test_dataset[1], test_dataset[2])
         return self.test(data)
+
+    # This function checks whether a file or list of files
+    # exists and will not throw an error.
+    #
+    # @param files List of files
+    # @return If any of the files do not exist - False else True
+    def check_file(self, files):
+        for file in files:
+            if not os.path.isfile(file):
+                print("File "+str(file)+" does NOT exist!")
+                return False
+        return True
 
     # Perform testing on some data,
     # returning an accuracy value
     #
     # @param data The data to perform testing on ([Q, R, L])
     # @return Accuracy value
-    def test(self, data, method="threshold"):
+    def test(self, data):
         good_predictions, predictions = 0, 1
         neg, pos = [], []
         test_time = 0
         length_data = len(data)
-        print("Testing using "+str(method))
+        print("Testing using threshold...")
         for pair in data:
             pred, similarity, comp_time = self.predict(pair[0], pair[1])
             print("REF: ", pair[1], " QUERY: ", pair[0])
@@ -465,6 +575,7 @@ class ImageVerificationTool:
         new_time = test_time / float(length_data)
         print("Average computation time: "+str(new_time)+"s")
         print("Test total time: "+str(test_time)+"s")
+        self.isTest = False
         return good_predictions/float(len(data))
 
     # This function writes the predicted values to two files:
@@ -473,14 +584,16 @@ class ImageVerificationTool:
     # to find the best threshold given these two files.
     #
     # @param neg The list of negative predictions
-    # @param pos The list of positive predicitions
+    # @param pos The list of positive predictions
     def write_samples_to_file(self, neg, pos):
         with open('./negative.txt', 'w') as f:
             for item in neg:
                 f.write(str(item)+"\n")
+            f.close()
         with open('./positive.txt', 'w') as f:
             for item in pos:
                 f.write(str(item)+"\n")
+            f.close()
 
     # Visualize the prediction results
     #
@@ -500,9 +613,18 @@ class ImageVerificationTool:
     # @return similarity The similarity value for the current prediction
     # @return The time that the prediction took to complete
     def predict(self, pathQ, pathR):
+        isExtQ, isExtR = False, False
+        for ext in ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG']:
+            if ext in pathQ: isExtQ = True
+            if ext in pathR: isExtR = True
+        if not isExtQ or not isExtR:
+            print("Not supported file format!")
+            return
+        if not self.check_file([pathQ, pathR]): return
         self.comp_time = time.time()  # Start counting time
         similarity = self.get_max_similarity(pathQ, pathR)
-        prediction = 1 if similarity >= self.threshold else 0
+        if self.measure == "ssd": prediction = 0 if similarity > self.threshold else 1
+        else: prediction = 1 if similarity >= self.threshold else 0
         self.print_prediction(prediction, similarity)
         return prediction, similarity, self.get_time()
 
@@ -521,8 +643,7 @@ class ImageVerificationTool:
     # @return new_time The finish time of the process
     def get_time(self):
         new_time = int(time.time() - self.comp_time)
-
-        print("=====================")
+        print("=======================")
         print("Predict Time: "+str(new_time)+"s")
         return new_time
 
@@ -537,14 +658,17 @@ class ImageVerificationTool:
     # @param print_mask A boolean value specifying whether to show a likelihood map or not
     # @param match_method A string specifying the matching method (tm or pm)
     # @param model The CNN used to extract features
+    # @param measure The Similarity Measure that will be used
     def __init__(self, extr_path, extract, extr_dataset, plot,
-                 threshold, print_mask, match_method, surf, model):
+                 threshold, print_mask, match_method, surf, model, measure):
+        self.isTest = False
+        self.measure, model = measure[0], model[0]
         self.pick_model(model)
         self.threshold, self.predict_method, self.match_method = threshold, "threshold", match_method
         self.extract, self.knn, self.print_mask, self.surf = extract, None, print_mask, surf
         print("Initializing tool with: threshold = " + str(threshold) + " | predict_method = " +
               self.predict_method + " | match_method = " + match_method + " | SURF = " + str(surf) +
-            " | model = " + str(model))
+            " | model = " + str(model) + " | measure = " + str(self.measure))
 
         # Try to generate an extraction file
         if extract:
@@ -601,7 +725,8 @@ if __name__ == '__main__':
                         nargs=2)
     parser.add_argument('-s', '--surf', help="Toggle surf comparison mode True or False. For False just omit command.",
                         type=str_converter, nargs='?', default=False, const=True)
-    parser.add_argument('--model', choices=['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception'], nargs=1, default='resnet50')
+    parser.add_argument('--model', choices=['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception'], nargs=1, default=['resnet50'])
+    parser.add_argument('--measure', choices=['cc', 'cs', 'ssd'], nargs=1, default=['cc'])
     # Get a dictionary of parser arguments
     args = parser.parse_args()
     args_dict = vars(args)

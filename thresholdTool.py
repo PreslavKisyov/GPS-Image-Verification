@@ -51,11 +51,13 @@ class BestThresholdTool:
     def get_best_thr(self):
         neg, pos = self.get_samples(self.neg_path, self.pos_path)
         best_thr, acc = 0, 0
-
+        m_neg, m_pos = max(neg), max(pos)
+        max_val = m_neg if m_neg >= m_pos else m_pos
+        print("The max value recorded is: "+str(max_val))
         # Get the best threshold/accuracy by trying
         if self.reverse:
             # Get the threshold for measures that where lower values are better
-            for thr in np.arange(0.0, 1.0, 0.000001):
+            for thr in np.arange(0.0, max_val, 0.001):
                 acc_samples = 0
                 for n in neg:
                     if n >= thr: acc_samples += 1
@@ -135,10 +137,9 @@ if __name__ == '__main__':
         ex, arg_l = argparse.ArgumentTypeError(
             'Boolean value True or False expected, (' + str(arg) + ') given!'), arg.lower()
         if type(arg) is bool: return arg
-        if arg_l not in ['true', 'false']:
-            raise ex
-        else:
-            return True if arg_l == 'true' else False
+        if arg_l not in ['true', 'false']: raise ex
+        else: return True if arg_l == 'true' else False
+
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-a', '--argument', dest='dataset', help="Specify the file locations in a dataset with 3 arguements:\
                                                                                         \n -NEGATIVE SAMPLES DESTINATION FILE\
