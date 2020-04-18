@@ -120,12 +120,12 @@ class ImageVerificationTool:
         cc = np.divide(product, denominator)
         return cc
 
-    # Perform Cosine Similarity on two feature vectors
+    # Perform The Normalized Cross-Correlation on two feature vectors
     # in order to get a similarity vector with best matching features
     #
     # @param query_f The query feature vector
     # @param refer_f The reference feature vector
-    # @return cs The Cosine Similarity vector
+    # @return ncc The Normalized Cross-Correlation/Cosine Similarity vector
     def get_cs(self, query_f, refer_f):
         # Normalize query vector
         query = np.transpose(query_f)
@@ -141,10 +141,10 @@ class ImageVerificationTool:
         # Get Dot Product
         product = np.dot(refer_f, query)
 
-        # Getting Cosine Similarity
-        cs = np.divide(product, denominator)
-        print(cs.shape)
-        return cs
+        # Getting The Normalized Cross-Correlation/Cosine Similarity
+        ncc = np.divide(product, denominator)
+
+        return ncc
 
     # Perform the Sum of Squared Differences on two feature vectors
     # in order to get a similarity vector with best matching features
@@ -293,7 +293,7 @@ class ImageVerificationTool:
         if self.measure == "cc":
             measure = self.get_cc(query_f, refer_f)
             _, sim, _, _ = cv2.minMaxLoc(measure)
-        elif self.measure == "cs":
+        elif self.measure == "ncc":
             measure = self.get_cs(query_f, refer_f)
             _, sim, _, _ = cv2.minMaxLoc(measure)
         elif self.measure == "ssd":
@@ -740,7 +740,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--surf', help="Toggle surf comparison mode True or False. For False just omit command.",
                         type=str_converter, nargs='?', default=False, const=True)
     parser.add_argument('--model', choices=['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception'], nargs=1, default=['resnet50'])
-    parser.add_argument('--measure', choices=['cc', 'cs', 'ssd'], nargs=1, default=['cc'])
+    parser.add_argument('--measure', choices=['cc', 'ncc', 'ssd'], nargs=1, default=['cc'])
     # Get a dictionary of parser arguments
     args = parser.parse_args()
     args_dict = vars(args)

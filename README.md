@@ -41,9 +41,9 @@ The model implements multiple arguments and commands that can be invoked by runn
 :warning:Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**.<br/>
 For the first command the choices are - ['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception']. The default is resnet50.<br/>
 An example would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm --model resnet152<br/>
-The second command (**--measure**) has 3 choices - ['cc', 'cs', 'ssd']. These choices represent Correlation Coefficient, Cosine Similarity and Sum of Squared Differences respectively.
+The second command (**--measure**) has 3 choices - ['cc', 'ncc', 'ssd']. These choices represent Correlation Coefficient, Normalized Cross-Correlation and Sum of Squared Differences respectively.
 **The Sum of Squared Differences** requires the threshold to be changed accordingly because of its undefined range of values. That might be the threshold having a bigger value than 1. <br/>
-An example of that command would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm pm --model vgg19 --measure cs<br/>
+An example of that command would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm pm --model vgg19 --measure ncc<br/>
 :warning:To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
 :warning:To change the threshold used, add the **-thr someNumber** command to either of the commands above!
 
