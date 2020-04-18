@@ -126,7 +126,7 @@ class ImageVerificationTool:
     # @param query_f The query feature vector
     # @param refer_f The reference feature vector
     # @return ncc The Normalized Cross-Correlation/Cosine Similarity vector
-    def get_cs(self, query_f, refer_f):
+    def get_ncc(self, query_f, refer_f):
         # Normalize query vector
         query = np.transpose(query_f)
         query_v = np.sum(np.square(query), axis=0, keepdims=True)
@@ -154,6 +154,7 @@ class ImageVerificationTool:
     # @return ssd The Sum of Squared Differences vector
     def get_ssd(self, query_f, refer_f):
         # pad the vector so it can be subtracted
+        # The None is needed because both vectors are of different shape
         d = refer_f[:, None] - query_f
 
         # Getting Sum of Squared Differences
@@ -294,7 +295,7 @@ class ImageVerificationTool:
             measure = self.get_cc(query_f, refer_f)
             _, sim, _, _ = cv2.minMaxLoc(measure)
         elif self.measure == "ncc":
-            measure = self.get_cs(query_f, refer_f)
+            measure = self.get_ncc(query_f, refer_f)
             _, sim, _, _ = cv2.minMaxLoc(measure)
         elif self.measure == "ssd":
             measure = self.get_ssd(query_f, refer_f)
