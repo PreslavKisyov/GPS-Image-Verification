@@ -51,6 +51,10 @@ class BestThresholdTool:
     def get_best_thr(self):
         neg, pos = self.get_samples(self.neg_path, self.pos_path)
         best_thr, acc = 0, 0
+
+        if len(neg) == 0 or len(pos) == 0:
+            print("No values have been found!")
+            exit()
         m_neg, m_pos = max(neg), max(pos)
         max_val = m_neg if m_neg >= m_pos else m_pos
         print("The max value recorded is: "+str(max_val))
@@ -76,6 +80,38 @@ class BestThresholdTool:
 
         return best_thr, acc, neg, pos
 
+    # This function separates the samples into
+    # True and False positive/negative so they can
+    # be visualised better
+    #
+    # @param pos The positive samples
+    # @param neg The negative samples
+    # @param best_thr The best threshold found for the data
+    # @return false_pos The False positive samples
+    # @return false_neg The False negative samples
+    # @return true_pos The True positive samples
+    # @return true_neg The True negative samples
+    def get_separated_samples(self, pos, neg, best_thr):
+        false_pos, false_neg = [], []
+        true_pos, true_neg = [], []
+        # Count false positive samples
+        for p in pos:
+            if self.reverse:
+                if p > best_thr: false_pos.append(p)
+                else: true_pos.append(p)
+            else:
+                if p < best_thr: false_pos.append(p)
+                else: true_pos.append(p)
+        # Count false negative samples
+        for n in neg:
+            if self.reverse:
+                if n < best_thr: false_neg.append(n)
+                else: true_neg.append(n)
+            else:
+                if n > best_thr: false_neg.append(n)
+                else: true_neg.append(n)
+        return false_pos, false_neg, true_pos, true_neg
+
     # This function plots the data of two
     # sample lists as well as the recorded
     # accuracy and best threshold
@@ -84,21 +120,37 @@ class BestThresholdTool:
         best_thr, acc, neg, pos = self.get_best_thr()
         print("Plotting...")
         sum_len = len(neg) + len(pos)
-        x1 = np.linspace(0, sum_len, len(neg))
-        x2 = np.linspace(0, sum_len, len(pos))
-        plt.plot(x1, neg)
-        plt.plot(x2, pos)
+        plt.figure(figsize=(8, 5))
+        false_pos, false_neg, true_pos, true_neg = self.get_separated_samples(pos, neg, best_thr)
+
+        # Get linespace for all samples
+        x0 = np.linspace(0, len(neg), len(true_neg))
+        x1 = np.linspace(len(neg), sum_len, len(true_pos))
+        x2 = np.linspace(0, len(neg), len(false_neg))
+        x3 = np.linspace(len(neg), sum_len, len(false_pos))
+
+        # plot all samples
+        plt.plot(x0, true_neg, 'o', color='blue')
+        plt.plot(x1, true_pos, 'o', color='red')
+        plt.plot(x2, false_neg, 'o', color='aqua')
+        plt.plot(x3, false_pos, 'o', color='orange')
+
         print("Best accuracy: ", acc / sum_len, " Best Threshold: ", best_thr)
         fontP = FontProperties()
         fontP.set_size('small')
         x_coordinates = [0, sum_len]
         y_coordinates = [best_thr, best_thr]
         print("Saving plot to "+self.save_file)
-        plt.plot(x_coordinates, y_coordinates)
-        plt.legend(['Negative Samples', 'Positive Samples'], loc='upper left')
-        plt.title("Acc: " + str(float(round(acc / sum_len, 3))) + " Thr: " + str(float(round(best_thr, 3))))
+        plt.plot(x_coordinates, y_coordinates, color="green")
+        plt.legend(['True Negative Samples: '+str(len(true_neg))+'/'+str(len(neg)), 'True Positive Samples: '+str(len(true_pos))+'/'+str(len(pos)),
+                    'False Negative Samples: '+str(len(false_neg))+'/'+str(len(neg)), 'False Positive Samples: '+str(len(false_pos))+'/'+str(len(pos)),
+                    'Threshold: ' + str(float(round(best_thr, 3)))],
+                   borderaxespad=0., bbox_to_anchor=(1.04, 1))
+        plt.title("Acc: " + str(float(round(acc / sum_len, 3))))
         plt.xlabel("Samples")
         plt.ylabel("Similarity Values")
+        plt.grid(True)
+        plt.tight_layout()
         plt.savefig(self.save_file)
         plt.show()
 

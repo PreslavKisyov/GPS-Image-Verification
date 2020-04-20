@@ -146,22 +146,6 @@ class ImageVerificationTool:
 
         return ncc
 
-    # Perform the Sum of Squared Differences on two feature vectors
-    # in order to get a similarity vector with best matching features
-    #
-    # @param query_f The query feature vector
-    # @param refer_f The reference feature vector
-    # @return ssd The Sum of Squared Differences vector
-    def get_ssd(self, query_f, refer_f):
-        # pad the vector so it can be subtracted
-        # The None is needed because both vectors are of different shape
-        d = refer_f[:, None] - query_f
-
-        # Getting Sum of Squared Differences
-        ssd = np.sum(np.square(d), axis=-1)
-
-        return ssd
-
     # Extract the likelihood maps for two images
     # from a similarity vector with shape (h*w, h1*w1)
     #
@@ -171,14 +155,10 @@ class ImageVerificationTool:
     # @return refer_mask The reference feature mask
     def get_masks(self, similarity_v, sizes):
         # Extract best features from the two axes of the similarity vector
-        if self.measure == "ssd":
-            # Get the lowest values
-            query_mask = np.min(similarity_v, axis=0)
-            refer_mask = np.min(similarity_v, axis=1)
-        else:
-            # Get the biggest values
-            query_mask = np.max(similarity_v, axis=0)
-            refer_mask = np.max(similarity_v, axis=1)
+        # Get the biggest values
+        query_mask = np.max(similarity_v, axis=0)
+        refer_mask = np.max(similarity_v, axis=1)
+
         # Reshape the masks to be of two dimensions so they can be shown as images
         query_mask = query_mask.reshape(sizes[0][0], sizes[0][1])
         refer_mask = refer_mask.reshape(sizes[1][0], sizes[1][1])
@@ -211,12 +191,8 @@ class ImageVerificationTool:
         # on the reference image, showing the best matched location
         if patch is None:
             w, h = q_mask.shape[::-1]  # Query image
-            if self.measure == "ssd":
-                _, _, loc, _ = cv2.minMaxLoc(r_mask)
-                first_point, second_point = self.get_points(loc, w, h)
-            else:
-                _, _, _, loc = cv2.minMaxLoc(r_mask)
-                first_point, second_point = self.get_points(loc, w, h)
+            _, _, _, loc = cv2.minMaxLoc(r_mask)
+            first_point, second_point = self.get_points(loc, w, h)
             cv2.rectangle(r_mask, first_point, second_point, 255, -1)  # Draw the object
         else: r_mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY) # Show the patch image instead
 
@@ -256,7 +232,6 @@ class ImageVerificationTool:
     # @return patch The best matched patch image
     def patch_matching(self, queryImg, referImg):
         maxSimilarity, bestSizes, bestCC = 0, [], None
-        minSimilarity = float('inf')
         best_patch = None
         # Resize/Pre-process query image
         imgQ = cv2.resize(queryImg, (int(queryImg.shape[1] * float(0.15)), int(queryImg.shape[0] * float(0.15))), interpolation=cv2.INTER_AREA)
@@ -270,15 +245,12 @@ class ImageVerificationTool:
             # Perform Correlation Coefficient and extract similarity value
             maxSim, cc = self.get_max_value(query_f, refer_f)
             # Update values to the best ones so far
-            if self.measure != "ssd":
-                if maxSim >= maxSimilarity:
-                    maxSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
-            else:
-                if maxSim <= minSimilarity:
-                    minSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
+            if maxSim >= maxSimilarity:
+                maxSimilarity, bestCC, bestSizes, best_patch = maxSim, cc, sizes, patch
+
             # Stop performing the method if a match has been found
             if self.check_max_similarity(maxSim): break
-        return [maxSimilarity, bestCC, bestSizes, best_patch] if self.measure != "ssd" else [minSimilarity, bestCC, bestSizes, best_patch]
+        return maxSimilarity, bestCC, bestSizes, best_patch
 
     # Perform the picked Similarity Measure method
     # and extract the maximum/minimum value from the similarity vector
@@ -297,9 +269,6 @@ class ImageVerificationTool:
         elif self.measure == "ncc":
             measure = self.get_ncc(query_f, refer_f)
             _, sim, _, _ = cv2.minMaxLoc(measure)
-        elif self.measure == "ssd":
-            measure = self.get_ssd(query_f, refer_f)
-            sim, _, _, _ = cv2.minMaxLoc(measure)
 
         return round(sim, 3), measure
 
@@ -317,7 +286,6 @@ class ImageVerificationTool:
             scales = [10, 12, 14, 16, 18, 20]
         else: scales = [22, 24, 26, 28, 30]
         maxSimilarity, bestSizes, bestCC = 0, [], None
-        minSimilarity = float('inf')
         imgR = self.process_image(referImg)
         for scale in scales:
             query = self.get_query_image(queryImg, scale)
@@ -327,17 +295,14 @@ class ImageVerificationTool:
             maxSim, cc = self.get_max_value(query_f, refer_f)
 
             # Update values to the best ones so far
-            if self.measure != "ssd":
-                if maxSim >= maxSimilarity:
-                    maxSimilarity, bestCC, bestSizes = maxSim, cc, sizes
-            else:
-                if maxSim <= minSimilarity:
-                    minSimilarity, bestCC, bestSizes = maxSim, cc, sizes
+            if maxSim >= maxSimilarity:
+                maxSimilarity, bestCC, bestSizes = maxSim, cc, sizes
+
 
             # Stop performing the method if a match has been found
             if self.check_max_similarity(maxSim): break
 
-        return [maxSimilarity, bestCC, bestSizes] if self.measure != "ssd" else [minSimilarity, bestCC, bestSizes]
+        return maxSimilarity, bestCC, bestSizes
 
     # Perform a check whether further iteration of either
     # the image scales or patches is required.
@@ -348,8 +313,8 @@ class ImageVerificationTool:
     def check_max_similarity(self, maxSim):
         if self.extract or self.print_mask or self.isTest: return False  # Do whole iterations when extracting values
         # Predict against threshold
-        if self.measure != "ssd": return True if maxSim >= self.threshold else False
-        else: return True if maxSim <= self.threshold else False
+        return True if maxSim >= self.threshold else False
+
 
     # Get the best maximum similarity value by performing different
     # matching methods, depending on the choice
@@ -384,12 +349,10 @@ class ImageVerificationTool:
             else: best_max_sim, bestCC, bestSizes, patch = self.patch_matching(imgQ, imgR)
 
             # Extract and draw image masks
-            if self.print_mask:
-                if (best_max_sim >= self.threshold and self.measure != "ssd") or \
-                    (best_max_sim <= self.threshold and self.measure == "ssd"):
-                    images = [cv2.imread(path_q), cv2.imread(path_r)]
-                    mask_q, mask_r = self.get_masks(bestCC, bestSizes)
-                    self.print_masks(images, [mask_q, mask_r], patch)
+            if self.print_mask is True and best_max_sim >= self.threshold:
+                images = [cv2.imread(path_q), cv2.imread(path_r)]
+                mask_q, mask_r = self.get_masks(bestCC, bestSizes)
+                self.print_masks(images, [mask_q, mask_r], patch)
 
         print("BEST SIMILARITY: ", best_max_sim)
         return best_max_sim
@@ -638,8 +601,7 @@ class ImageVerificationTool:
         if not self.check_file([pathQ, pathR]): return
         self.comp_time = time.time()  # Start counting time
         similarity = self.get_max_similarity(pathQ, pathR)
-        if self.measure == "ssd": prediction = 0 if similarity > self.threshold else 1
-        else: prediction = 1 if similarity >= self.threshold else 0
+        prediction = 1 if similarity >= self.threshold else 0
         self.print_prediction(prediction, similarity)
         return prediction, similarity, self.get_time()
 
@@ -741,7 +703,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--surf', help="Toggle surf comparison mode True or False. For False just omit command.",
                         type=str_converter, nargs='?', default=False, const=True)
     parser.add_argument('--model', choices=['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception'], nargs=1, default=['resnet50'])
-    parser.add_argument('--measure', choices=['cc', 'ncc', 'ssd'], nargs=1, default=['cc'])
+    parser.add_argument('--measure', choices=['cc', 'ncc'], nargs=1, default=['cc'])
     # Get a dictionary of parser arguments
     args = parser.parse_args()
     args_dict = vars(args)
