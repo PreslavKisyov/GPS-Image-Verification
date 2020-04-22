@@ -24,6 +24,7 @@ class ImageVerificationTool:
     print("Keras: ", str(keras.__version__), " TF: ", str(tensorflow.__version__), " NumPy: ", str(np.__version__), " OpenCV: ", str(cv2.__version__),
           " Sklearn: ", str(sklearn.__version__), " Argparse: ", str(argparse.__version__),  " Matplotlib: ", str(matplotlib.__version__),
           " Time: ", str(sys.version), " Warnings: ", str(sys.version),  " OS: ", str(sys.version))
+
     # Ignore CPU Warnings
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -198,19 +199,19 @@ class ImageVerificationTool:
             _, _, _, loc = cv2.minMaxLoc(r_mask)
             first_point, second_point = self.get_points(loc, w, h)
             cv2.rectangle(r_mask, first_point, second_point, 255, -1)  # Draw the object
-        else: r_mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY) # Show the patch image instead
+        else: r_mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)  # Show the patch image instead
 
         # Plot the query and reference masks as well as their original images
-        fig, ax = plt.subplots(2, 2, figsize=(15, 15))
-        ax = ax.ravel()
-        ax[0].imshow(images[0])
-        ax[0].set_title('Query original image')
-        ax[1].imshow(images[1])
-        ax[1].set_title('Reference original image')
-        ax[2].imshow(q_mask, 'gray')
-        ax[2].set_title('Query image mask')
-        ax[3].imshow(r_mask, 'gray')
-        ax[3].set_title('Reference image mask')
+        fig, axes = plt.figure(figsize=(15, 15)), (2, 2)
+
+        info_map = {0: ["Query original image", images[0]], 1: ["Reference original image", images[1]],
+               2: ["Query image mask", q_mask], 3: ["Reference image mask", r_mask]}
+
+        # Creating a subplot for every image
+        for index_ax in range(sum(axes)):
+            subPlot = fig.add_subplot(axes[0], axes[1], index_ax+1)  # rows; cols; index
+            subPlot.title.set_text(info_map[index_ax][0])
+            plt.imshow(info_map[index_ax][1], 'gray')
         plt.show()
 
     # Resize the query image with given certain percentage/scale.
@@ -475,7 +476,6 @@ class ImageVerificationTool:
         plt.xlabel('Prediction', fontweight='bold')
         ax.yaxis.grid(True)
         plt.legend(["Similar " + '%.2f'%avg_x+" avrg", "Not Similar " + '%.2f'%avg_y+" avrg"], loc='upper right')
-        fig.savefig("graph.png")
         plt.show()
 
     # Generate a dataset from the content of a labels file
