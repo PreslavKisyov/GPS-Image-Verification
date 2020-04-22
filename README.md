@@ -77,8 +77,8 @@ The labels text file when testing should have the following layout:<br/>
 This is the script that iterates over multiple thresholds and picks the best one for the data provided. It requires two files. One with negative sample similarity values and one with positive ones. Additionally, the **-r** command can be invoked to reverse the order of importance. Meaning, lower values will be better. This mode can be invoked depending on the similarity measure used for extracting the similarity values.<br/>
 :exclamation:**Get Best Threshold Default** – python thresholdTool.py -a “path to negative text file” “path to positive text file”<br/>
 :warning:An extra argument can be added that specifies the location of where the produced plot graph will be saved. If not specified, it will be saved to a **default.jpg** image!<br/>
-:exclamation:**Get Best Threshold Reverse Order** - python thresholdTool.py -a “path to negative text file” “path to positive text file” “path to a new jpg file” -r
-
+:exclamation:**Get Best Threshold Reverse Order** - python thresholdTool.py -a “path to negative text file” “path to positive text file” “path to a new jpg file” -r <br/>
+:exclamation:**Adjust Threshold Intensity Value** - python thresholdToold.py -a "path to negative sample values file" "path to positive sample values file" -ints 0.0001 
 ### Additional Information ###
 Both files must be passed through in that exact order. The negative file comes before the positive one, as shown in the examples above. Both files should have the following layout:<br/>
 **SimilarityValue**<br/>

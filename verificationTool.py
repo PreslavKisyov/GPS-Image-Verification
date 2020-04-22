@@ -263,12 +263,9 @@ class ImageVerificationTool:
         # Pick the Similarity Measure to be used given the passed
         # argument. The measure will never be None as it has default value
         measure = None
-        if self.measure == "cc":
-            measure = self.get_cc(query_f, refer_f)
-            _, sim, _, _ = cv2.minMaxLoc(measure)
-        elif self.measure == "ncc":
-            measure = self.get_ncc(query_f, refer_f)
-            _, sim, _, _ = cv2.minMaxLoc(measure)
+        if self.measure == "cc": measure = self.get_cc(query_f, refer_f)
+        elif self.measure == "ncc": measure = self.get_ncc(query_f, refer_f)
+        _, sim, _, _ = cv2.minMaxLoc(measure)
 
         return round(sim, 3), measure
 
@@ -315,6 +312,24 @@ class ImageVerificationTool:
         # Predict against threshold
         return True if maxSim >= self.threshold else False
 
+    # The following code is patented, thus it must not be
+    # used for commercial use. Similar implementation of the
+    # code can also be found at - https://docs.opencv.org/master/d5/d6f/tutorial_feature_flann_matcher.html (OpenCV)
+    # The paper of the method is Speeded-Up Robust Features (SURF), with authors - Herbert Bay, Andreas Ess, Tinne Tuytelaars, and Luc Van Gool
+    #
+    # This function gets the number of matches produced by the method.
+    #
+    # @params gray_imgQ, gray_imgR The Query and Reference images in gray mode
+    # @return The number of matches
+    def get_surf_value(self, gray_imgQ, gray_imgR):
+        surf = cv2.xfeatures2d.SURF_create(hessianThreshold=400) # Initialise the method
+        # Extract features
+        _, q_features = surf.detectAndCompute(gray_imgQ, None)
+        _, r_features = surf.detectAndCompute(gray_imgR, None)
+        feature_matcher = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
+        feature_matches = feature_matcher.knnMatch(q_features, r_features, 2)
+
+        return len([match_pair[0] for match_pair in feature_matches if match_pair[0].distance < 0.75 * match_pair[1].distance])
 
     # Get the best maximum similarity value by performing different
     # matching methods, depending on the choice
@@ -328,21 +343,16 @@ class ImageVerificationTool:
         if self.surf:
             gray_imgQ = cv2.cvtColor(imgQ, cv2.COLOR_BGR2GRAY)
             gray_imgR = cv2.cvtColor(imgR, cv2.COLOR_BGR2GRAY)
+
+            # Resize to 80% of the images to avoid memory overflow
             gray_imgQ = cv2.resize(gray_imgQ, (int(gray_imgQ.shape[1] * float(0.80)), int(gray_imgQ.shape[0] * float(0.80))), interpolation=cv2.INTER_AREA)
             gray_imgR = cv2.resize(gray_imgR,
                                   (int(gray_imgR.shape[1] * float(0.80)), int(gray_imgR.shape[0] * float(0.80))),
                                   interpolation=cv2.INTER_AREA)
 
-            # The following code has been taken from OpenCV. The code is patented, thus it must not be
-            # used for distribution or commercial use. The code can also be found at - https://docs.opencv.org/trunk/da/df5/tutorial_py_sift_intro.html
-            # The paper of the method is Speeded-Up Robust Features (SURF), with authors - Herbert Bay, Andreas Ess, Tinne Tuytelaars, and Luc Van Gool
-            surf = cv2.xfeatures2d.SURF_create()
-            # Extract features
-            _, q_features = surf.detectAndCompute(gray_imgQ, None)
-            _, r_features = surf.detectAndCompute(gray_imgR, None)
-            # Perform Correlation Coefficient
-            cc = self.get_cc(q_features, r_features)
-            _, best_max_sim, _, _ = cv2.minMaxLoc(cc) # Extract max value
+            # Get the number of matches (the similarity value)
+            best_max_sim = self.get_surf_value(gray_imgQ, gray_imgR)
+            if self.print_mask: print("Printing has been disabled for SURF because of its different implementation!")
         else:
             # Check matching method
             if self.match_method == "tm": best_max_sim, bestCC, bestSizes = self.template_matching(imgQ, imgR)
@@ -522,7 +532,7 @@ class ImageVerificationTool:
         length_data = len(data)
         print("Testing using threshold...")
         for pair in data:
-            if not self.check_file(pair): return
+            if not self.check_file([pair[0], pair[1]]): return
             pred, similarity, comp_time = self.predict(pair[0], pair[1])
             print("REF: ", pair[1], " QUERY: ", pair[0])
             print("PRED: ", str(pred), " AND LABEL: ", str(pair[-1]), "\n")
@@ -537,7 +547,7 @@ class ImageVerificationTool:
             predictions, test_time = (predictions + 1), (test_time + comp_time)
 
         # Uncomment to write samples to file
-        # self.write_samples_to_file(neg, pos)
+        self.write_samples_to_file(neg, pos)
 
         new_time = test_time / float(length_data)
         print("Average computation time: "+str(new_time)+"s")
