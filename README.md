@@ -10,19 +10,20 @@ that value against a threshold.<br/>
 # Installation #
 **Python 3** is required for this project. The version used in this project is 3.6.8.
 **Python 3** can be downloaded from **https://www.python.org/downloads/**. 
-There are two ways to install the project:
-1) Run the **setup.py** file present in the main directory of the project.
-The command is - **python setup.py install**.
-**Note:** If python 2 is also present on the machine, the command should
-look like - **python3 setup.py install**. And that would be valid for all the commands in this project.
-2) If the previous method did not work, there is an alternative.
-It uses '**pip**', and more specifically **pip3**, as python 3 is used.<br/>
-The guide to installing **pip** can be found on the following website - **https://pip.pypa.io/en/stable/installing/**.
-The file is called **get-pip.py**, and it can be downloaded by the url mentioned above.
-The command to install that file is as follows:<br/>
-- **python get-pip.py**<br/>
-For more installation options, the provided guide above can be referenced.<br/>
-To install all libraries run - **pip install -r requirements.txt**.<br/>
+To install the project, the following steps can be followed:
+Python 3 virtual environment - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal:<br/>
+python3 -m venv verification-env <br/>
+The name of the environment is specified after the "venv" command. In this case it is "verification-env". The environment will create a directory at the current location that contains a copy of the python interpreter. After successfully creating the environment, it needs to be activated. 
+This can be done with the following commands:<br/>
+Windows - verification-env\Scripts\activate.bat<br/>
+Unix or MacOS - source verification-env/bin/activate<br/>
+After running the command, according to the system, the environment should show on the terminal. Now, the requirements for the project must be installed.<br/>
+Installing requirements - the requirements can be installed with the help of pip, or more specifically pip3. 
+If pip is not already installed with python 3, which it should be by default, the original guide can be followed. 
+It can be found on https://pip.pypa.io/en/stable/installing/. The it pip setup file must be downloaded and then executed with python.
+After it is made sure that pip is installed on the system, the following command can be run to install the requirements necessary in the directory of the project:<br/>
+pip install -r requirements.txt<br/>
+
 This will get all the requirements needed and install them recursively.
 Additionally, the requirements can be installed manually. <br/>
 An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. <br/>
@@ -30,7 +31,7 @@ The error would say that the gast library is missing, although it could be insta
 The fix is rather simple. The gast library must be removed and then installed again:<br/>
 - **pip uninstall gast**<br/>
 - **pip install gast**<br/>
-:warning:**Note:** For some systems, administrator privileges might be required.<br/>
+:warning:**Note:** For some systems, administrator privileges might be required. Additionally, the issues described above should not occur if installed in a virtual environment<br/>
 
 # verificationTool User Guide #
 The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the ‘Test’ folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
