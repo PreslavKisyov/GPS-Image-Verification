@@ -111,10 +111,12 @@ class ImageVerificationTool:
 
         # Get denominator
         denominator = np.multiply(np.sqrt(refer_v), np.sqrt(query_v))
-        if np.sum(denominator) == 0: denominator = 1 # Make sure no division by 0 occurs
 
         # Get Dot Product
         product = np.dot(refer, query)
+
+        # Handle division by 0 or Nan (will return 0)
+        np.seterr(divide='ignore', invalid='ignore')
 
         # Getting Correlation coefficient
         cc = np.divide(product, denominator)
@@ -136,10 +138,12 @@ class ImageVerificationTool:
 
         # Get denominator
         denominator = np.multiply(np.sqrt(refer_v), np.sqrt(query_v))
-        if np.sum(denominator) == 0: denominator = 1  # Make sure no division by 0 occurs
 
         # Get Dot Product
         product = np.dot(refer_f, query)
+
+        # Handle division by 0 or Nan (will return 0)
+        np.seterr(divide='ignore', invalid='ignore')
 
         # Getting The Normalized Cross-Correlation/Cosine Similarity
         ncc = np.divide(product, denominator)
@@ -385,7 +389,7 @@ class ImageVerificationTool:
             similarity = self.get_max_similarity(new_data[path_index][0], new_data[path_index][1])
             self.show_progress(path_index+1, len(new_data))
             label = new_data[path_index][2]
-            print("Similarity: "+str(similarity)+" with label: "+str(label)+" ...("+str(path_index+1)+"/"+str(len(new_data))+")")
+            print("Label: "+str(label)+" ...("+str(path_index+1)+"/"+str(len(new_data))+")")
             extr_features.append(similarity)
             extr_labels.append(label)
 
@@ -399,6 +403,8 @@ class ImageVerificationTool:
                     f.write(feature+" "+label+" \n")
             print("New file created -> "+dataset_path)
         except IOError:
+
+
             print("Could not write to " + dataset_path + " file")
             raise
         new_time = self.get_time()
@@ -488,7 +494,7 @@ class ImageVerificationTool:
                     line_split = line.split(',')
                     if len(line_split) < 3:
                         print("Unsupported labels format!")
-                        exit(0)
+                        raise IOError
                     query_image, ref_image, label = line_split[0], line_split[1], int(line_split[2].split("\n")[0])
                     dataset.append([pathQ+query_image, pathR+ref_image, label])
             f.close()
@@ -547,7 +553,7 @@ class ImageVerificationTool:
             predictions, test_time = (predictions + 1), (test_time + comp_time)
 
         # Uncomment to write samples to file
-        self.write_samples_to_file(neg, pos)
+        # self.write_samples_to_file(neg, pos)
 
         new_time = test_time / float(length_data)
         print("Average computation time: "+str(new_time)+"s")
@@ -622,8 +628,8 @@ class ImageVerificationTool:
     # @param total_pred The total number of predictions
     def show_progress(self, num_of_pred, total_pred):
         current_status = int(round(50 * num_of_pred / float(total_pred)))
-        per = round(100.0 * num_of_pred / float(total_pred), 1)
-        print("[" + '=' * current_status+ "-" * (50 - current_status) + "] "+str(per) + "%", end="\n", flush=True)
+        percentage = round(100.0 * num_of_pred / float(total_pred), 1)
+        print("[" + '=' * current_status+ "-" * (50 - current_status) + "] "+str(percentage) + "%", end="\n", flush=True)
 
     # Get the finish time of a process
     #
