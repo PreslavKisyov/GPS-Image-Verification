@@ -11,18 +11,18 @@ that value against a threshold.<br/>
 **Python 3** is required for this project. The version used in this project is 3.6.8.
 **Python 3** can be downloaded from **https://www.python.org/downloads/**. 
 To install the project, the following steps can be followed:
-Python 3 virtual environment - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal:<br/>
-python3 -m venv verification-env <br/>
+**Python 3 virtual environment** - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal:<br/>
+**python3 -m venv verification-env** <br/>
 The name of the environment is specified after the "venv" command. In this case it is "verification-env". The environment will create a directory at the current location that contains a copy of the python interpreter. After successfully creating the environment, it needs to be activated. 
 This can be done with the following commands:<br/>
-Windows - verification-env\Scripts\activate.bat<br/>
-Unix or MacOS - source verification-env/bin/activate<br/>
+**Windows** - verification-env\Scripts\activate.bat<br/>
+**Unix or MacOS** - source verification-env/bin/activate<br/>
 After running the command, according to the system, the environment should show on the terminal. Now, the requirements for the project must be installed.<br/>
 Installing requirements - the requirements can be installed with the help of pip, or more specifically pip3. 
-If pip is not already installed with python 3, which it should be by default, the original guide can be followed. 
-It can be found on https://pip.pypa.io/en/stable/installing/. The it pip setup file must be downloaded and then executed with python.
+If **pip** is not already installed with python 3, which it should be by default, the original guide can be followed. 
+It can be found on **https://pip.pypa.io/en/stable/installing/**. The it pip setup file must be downloaded and then executed with python.
 After it is made sure that pip is installed on the system, the following command can be run to install the requirements necessary in the directory of the project:<br/>
-pip install -r requirements.txt<br/>
+**pip install -r requirements.txt**<br/>
 
 This will get all the requirements needed and install them recursively.
 Additionally, the requirements can be installed manually. <br/>
