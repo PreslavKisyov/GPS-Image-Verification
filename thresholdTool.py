@@ -61,7 +61,7 @@ class BestThresholdTool:
         # Get the best threshold/accuracy by trying
         if self.reverse:
             # Get the threshold for measures that where lower values are better
-            for thr in np.arange(0.0, max_val, 0.001):
+            for thr in np.arange(0.0, max_val, self.ints):
                 acc_samples = 0
                 for n in neg:
                     if n >= thr: acc_samples += 1
@@ -70,7 +70,7 @@ class BestThresholdTool:
                 if acc_samples >= acc: best_thr, acc = thr, acc_samples
         else:
             # Get the threshold for measures that where higher values are better
-            for thr in np.arange(0.0, 1.0, 0.000001):
+            for thr in np.arange(0.0, max_val, self.ints):
                 acc_samples = 0
                 for n in neg:
                     if n < thr: acc_samples += 1
@@ -159,14 +159,17 @@ class BestThresholdTool:
     # calls other class functions
     #
     # @parameter dataset A list of arguments
-    def __init__(self, dataset, reverse):
-        self.reverse = reverse
+    # @param reverse A toggle for the Reverse Mode
+    # @param ints The intensity for choosing a threshold
+    def __init__(self, dataset, reverse, ints):
+        self.reverse, self.ints = reverse, abs(ints)
         if len(dataset) == 0: exit()
         elif len(dataset) == 2:
             self.neg_path, self.pos_path = dataset
             self.save_file = "default.jpg"
         else: self.neg_path, self.pos_path, self.save_file = dataset
-        print("Initialising class with: | REVERSE: " + str(self.reverse) + " | NEGATIVE FILE: " + self.neg_path + " \n| POSITIVE FILE: " + self.pos_path + " | SAVEFILE LOCATION: " + self.save_file)
+        print("Initialising class with: | REVERSE: " + str(self.reverse) + " | NEGATIVE FILE: " + self.neg_path +
+              " \n| POSITIVE FILE: " + self.pos_path + " | SAVEFILE LOCATION: " + self.save_file + " | INTENSITY: " + str(abs(ints)))
         if '.txt' not in self.neg_path:
             self.neg_path = self.neg_path + ".txt"
         if '.txt' not in self.pos_path:
@@ -199,6 +202,8 @@ if __name__ == '__main__':
                                                                                         \n -NEW IMAGE SAVE FILE DESTINATION", default=[], nargs='*')
     parser.add_argument('-r', '--reverse', help="Toggle reverse mode. This should be used when trying to get the best threshold where the lower a value is, the better.",
                         type=str_converter, nargs='?', default=False, const=True)
+    parser.add_argument('-ints', '--intensity', action='store', dest='ints',
+                        help="Specify the intensity of which the threshold will be chosen by. Always above 0!", type=float, default=0.000001)
     # Get a dictionary of parser arguments
     args = parser.parse_args()
     args_dict = vars(args)
