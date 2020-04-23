@@ -181,7 +181,7 @@ class BestThresholdTool:
 
 # This is the main method of the python file
 # that gets the received arguments from a
-# parser and creates an object of the Best
+# parser and creates an object of the tool
 if __name__ == '__main__':
     # Convert string argument to boolean
     # This is the same method used in the verificationTool.py
