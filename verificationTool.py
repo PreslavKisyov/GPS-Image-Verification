@@ -325,7 +325,7 @@ class ImageVerificationTool:
     # This function gets the number of matches produced by the method.
     #
     # @params gray_imgQ, gray_imgR The Query and Reference images in gray mode
-    # @return The number of matches
+    # @return The number of matches above a threshold
     def get_surf_value(self, gray_imgQ, gray_imgR):
         surf = cv2.xfeatures2d.SURF_create(hessianThreshold=400) # Initialise the method
         # Extract features
