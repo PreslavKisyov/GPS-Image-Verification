@@ -1,4 +1,8 @@
-# Image-Based GPS Verification README
+<p align="center">
+  <img src=https://github.com/PreslavKisyov/GPS-Image-Verification/blob/master/Capture.JPG />
+</p>
+
+# Overview
 This project utilises different AI and Computer Vision methods to try and solve the long-pressing issue of Image Verification. The approach taken compares a query with a reference image taken from some coordinates, outputting a `similarity value`. Additionally, verification is performed by comparing that value against a predefined threshold.
 - The best threshold is picked by running the `thresholdTool.py`
 - The image verification is performed by running the `verificationTool.py`
