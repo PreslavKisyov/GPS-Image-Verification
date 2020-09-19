@@ -7,9 +7,11 @@ This project utilises different AI and Computer Vision methods to try and solve 
 - The best threshold is picked by running the `thresholdTool.py`
 - The image verification is performed by running the `verificationTool.py`
 
+# Requirements
+- **Python 3** 3.6.8 or higher
+- **Pip**
+
 # Installation #
-**Python 3** is required for this project. The version used in this project is 3.6.8.
-**Python 3** can be downloaded from **https://www.python.org/downloads/**. 
 To install the project, the following steps can be followed:
 **Python 3 virtual environment** - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal:<br/>
 **python3 -m venv verification-env** <br/>
@@ -19,9 +21,7 @@ This can be done with the following commands:<br/>
 **Unix or MacOS** - source verification-env/bin/activate<br/>
 After running the command, according to the system, the environment should show on the terminal. Now, the requirements for the project must be installed.<br/>
 Installing requirements - the requirements can be installed with the help of pip, or more specifically pip3. 
-If **pip** is not already installed with python 3, which it should be by default, the original guide can be followed. 
-It can be found on **https://pip.pypa.io/en/stable/installing/**. The it pip setup file must be downloaded and then executed with python.
-After it is made sure that pip is installed on the system, the following command can be run to install the requirements necessary in the directory of the project:<br/>
+<br/>
 **pip install -r requirements.txt**<br/>
 
 This will get all the requirements needed and install them recursively.
