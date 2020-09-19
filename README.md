@@ -8,7 +8,7 @@ This project utilises different AI and Computer Vision methods to try and solve 
 - The image verification is performed by running the `verificationTool.py`
 
 # Requirements
-- **Python 3** 3.6.8 or higher
+- **Python 3** - 3.6.8 or higher
 - **Pip**
 
 # Installation #
