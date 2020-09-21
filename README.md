@@ -13,25 +13,18 @@ This project utilises different AI and Computer Vision methods to try and solve 
 
 # Installation #
 To install the project, the following steps can be followed:
-**Python 3 virtual environment** - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal:<br/>
-**python3 -m venv verification-env** <br/>
-The name of the environment is specified after the "venv" command. In this case it is "verification-env". The environment will create a directory at the current location that contains a copy of the python interpreter. After successfully creating the environment, it needs to be activated. 
-This can be done with the following commands:<br/>
-**Windows** - verification-env\Scripts\activate.bat<br/>
-**Unix or MacOS** - source verification-env/bin/activate<br/>
-After running the command, according to the system, the environment should show on the terminal. Now, the requirements for the project must be installed.<br/>
-Installing requirements - the requirements can be installed with the help of pip, or more specifically pip3. 
-<br/>
-**pip install -r requirements.txt**<br/>
-
-This will get all the requirements needed and install them recursively.
-Additionally, the requirements can be installed manually. <br/>
-An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. <br/>
-The error would say that the gast library is missing, although it could be installed. That is because different versions are not compatible together. <br/>
-The fix is rather simple. The gast library must be removed and then installed again:<br/>
-- **pip uninstall gast**<br/>
-- **pip install gast**<br/>
-:warning:**Note:** For some systems, administrator privileges might be required. Additionally, the issues described above should not occur if installed in a virtual environment<br/>
+- Creating a virtual environment
+  - **Python 3 virtual environment** - creating a virtual environment can help preserve the system from installing and uninstalling different requirements, as well as it will provide a clean installation process. To create that environment, the following command can be executed on a terminal - **python3 -m venv verification-env**.
+The name of the environment is specified after the `venv` command. In this case it is `verification-env`. The environment will create a directory at the current location that contains a copy of the python interpreter. After successfully creating the environment, it needs to be activated. This can be done with the following commands:<br/>
+    - **Windows** - verification-env\Scripts\activate.bat
+    - **Unix or MacOS** - source verification-env/bin/activate</br>
+- Installing requirements
+  - The requirements can be installed with the help of pip, or more specifically pip3 - **pip install -r requirements.txt**.
+- An issue could occur on some systems after installing the Tensorflow library, especially if it was already present on the machine. The error would say that the `gast` library is missing, although it could be installed. That is because different versions are not compatible together. The gast library must be removed and then installed again:<br/>
+  - **pip uninstall gast**<br/>
+  - **pip install gast**
+  
+**Note:** For some systems, administrator privileges might be required. Additionally, the issues described above should not occur if installed in a virtual environment<br/>
 
 # verificationTool User Guide #
 The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the ‘Test’ folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
