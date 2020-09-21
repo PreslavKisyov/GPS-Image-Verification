@@ -44,16 +44,16 @@ The second command **--measure** has 2 choices - `['cc', 'ncc']`. These choices 
 
 Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above, as well as change the model or similarity measure used!
 
-## Extract Similarity Values to File and Plot
+## Extract/Plot Similarity Values to File
 - **Extract Values** - `python verificationTool.py -e -ed "path to query images" "path to reference images" "path to labels" -ep "path to the new text file”`<br/>
 The **-e** command invokes the extraction mode, **-ed** command provides the query and reference images, as well as the labels text file, and **-ep** provides the path where the new file will be saved to.<br/>
 - **Plot Values** - `python verificationTool.py --plot -ep "path to a text file with similarity values"`<br/>
 The **--plot** command is used with the **-ep** command. Here the **-ep** command provides the text file and it is not used to create a new one. The result of plotting is shown in the paper of this project and should produce a graph of the values.
 
-## SURF ##
-To use the SURF method, simply invoke the **-s** command after either any of the prediction or testing commands. It would invoke the SURF method that is also described and referenced in the paper of this project.<br/>
-:warning:**Note:** It does not use any of the methods invoked from the -mm command. Thus, it must be omitted.<br/>
-:exclamation: python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -s
+## SURF
+To use the `SURF` method, simply invoke the **-s** command after either any of the prediction or testing commands. It would invoke the `SURF` method that is also described and referenced in the paper of this project.<br/>
+**Note:** It does not use any of the methods invoked from the -mm command. Thus, it must be omitted.<br/>
+`python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -s`
 
 ### Additional Information ###
 The labels text file when extracting or plotting should have the following layout:<br/>
