@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=https://github.com/PreslavKisyov/GPS-Image-Verification/blob/master/Capture.JPG />
+  <img width="350" height="250" src=https://github.com/PreslavKisyov/GPS-Image-Verification/blob/master/Capture.JPG />
 </p>
 
 # Overview
