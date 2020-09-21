@@ -76,18 +76,17 @@ An extra argument can be added that specifies the location of where the produced
 
 ### Additional Information
 Both files must be passed through in that exact order. The negative file comes before the positive one, as shown in the examples above. Both files should have the following layout:<br/>
-**SimilarityValue**<br/>
-
-**0.50**<br/>
-**0.60**<br/>
-To extract those values, there is a commented-out method in the **verificationTool.py**, that saves two files given the values predicted by the model. 
-It can be found in the **test** function. 
-Additionally, the path files of the two files can be changed in the acutal function:<br/>
-# Uncomment to write samples to file<br/>
-# self.write_samples_to_file(neg, pos)<br/>
-Here the seconf line must be uncommented in order to enable the function. In the following code, the path of the two files
+- **SimilarityValue**<br/>
+  - **0.50**<br/>
+  - **0.60**<br/>
+  
+To extract those values, there is a commented-out method in the **verificationTool.py**, that saves two files given the values predicted by the model. It can be found in the **test** function. Additionally, the path files of the two files can be changed in the acutal function:<br/>
+ - // Uncomment to write samples to file<br/>
+   self.write_samples_to_file(neg, pos)<br/>
+   
+Here, the second line must be uncommented in order to enable the function. In the following code, the path of the two files
 can be changed: <br/>
-def write_samples_to_file(self, neg, pos):<br/>
+`def write_samples_to_file(self, neg, pos):<br/>
      with open('./negative.txt', 'w') as f:<br/>
          for item in neg:<br/>
              f.write(str(item)+"\n")<br/>
@@ -95,7 +94,7 @@ def write_samples_to_file(self, neg, pos):<br/>
      with open('./positive.txt', 'w') as f:<br/>
          for item in pos:<br/>
              f.write(str(item)+"\n")<br/>
-         f.close()<br/>
+         f.close()`<br/>
 #Testing Datasets – Download & Evaluation#
 To download the **Caltech Buildings dataset**, the following URL must be followed - **http://www.mohamedaly.info/datasets/caltech-buildings**<br/>
 There, a download link could be found. The dataset is 195MB. A labels text file will be provided in the **Datasets** folder of the project. The file is called **labels.txt**. <br/>
