@@ -33,13 +33,10 @@ The model implements multiple arguments and commands that can be invoked by runn
 **Template Match Prediction** – `python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm`<br/>
 **Patch Match Prediction** - `python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm`
 
-Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**.<br/>
-For the first command the choices are - ['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception']. The default is resnet50.<br/>
-An example would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm --model resnet152<br/>
-The second command (**--measure**) has 2 choices - ['cc', 'ncc']. These choices represent Correlation Coefficient and Normalized Cross-Correlation respectively.<br/>
-An example of that command would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm pm --model vgg19 --measure ncc<br/>
-:warning:To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
-:warning:To change the threshold used, add the **-thr someNumber** command to either of the commands above!
+Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**. For the first command, the choices are - `['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception']`. The default is resnet50. An example would be - `python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm --model resnet152`<br/>
+The second command **--measure** has 2 choices - `['cc', 'ncc']`. These choices represent Correlation Coefficient and Normalized Cross-Correlation respectively. An example of that command would be - `python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm pm --model vgg19 --measure ncc`<br/>
+- To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
+- To change the threshold used, add the **-thr someNumber** command to either of the commands above!
 
 ## Test ##
 :exclamation:**Template Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm tm<br/>
