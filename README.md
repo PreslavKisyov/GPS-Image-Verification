@@ -29,7 +29,7 @@ The name of the environment is specified after the `venv` command. In this case 
 # verificationTool User Guide #
 The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the `Test` folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
 
-## Predict ##
+## Predict
 **Template Match Prediction** – `python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm`<br/>
 **Patch Match Prediction** - `python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm`
 
@@ -38,15 +38,16 @@ The second command **--measure** has 2 choices - `['cc', 'ncc']`. These choices 
 - To print the likelihood maps, add the **-pm** command to either of the commands above. A figure should appear on the screen if and only if the prediction is positive, otherwise it would not print anything!<br/>
 - To change the threshold used, add the **-thr someNumber** command to either of the commands above!
 
-## Test ##
-:exclamation:**Template Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm tm<br/>
-:exclamation:**Patch Matching Test** - python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm pm<br/>
-:warning:Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above, as well as change the model or similarity measure used!
+## Test
+- **Template Matching Test** - `python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm tm`<br/>
+- **Patch Matching Test** - `python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -mm pm`
 
-## Extract Similarity Values to File and Plot ##
-:exclamation:**Extract Values** - python verificationTool.py -e -ed "path to query images" "path to reference images" "path to labels" -ep "path to the new text file”<br/>
+Again, the user can change the threshold by adding the **-thr someNumber** command to either of the commands above, as well as change the model or similarity measure used!
+
+## Extract Similarity Values to File and Plot
+- **Extract Values** - `python verificationTool.py -e -ed "path to query images" "path to reference images" "path to labels" -ep "path to the new text file”`<br/>
 The **-e** command invokes the extraction mode, **-ed** command provides the query and reference images, as well as the labels text file, and **-ep** provides the path where the new file will be saved to.<br/>
-:exclamation:**Plot Values** - python verificationTool.py --plot -ep "path to a text file with similarity values"<br/>
+- **Plot Values** - `python verificationTool.py --plot -ep "path to a text file with similarity values"`<br/>
 The **--plot** command is used with the **-ep** command. Here the **-ep** command provides the text file and it is not used to create a new one. The result of plotting is shown in the paper of this project and should produce a graph of the values.
 
 ## SURF ##
