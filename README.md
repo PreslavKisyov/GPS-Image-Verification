@@ -27,12 +27,13 @@ The name of the environment is specified after the `venv` command. In this case 
 **Note:** For some systems, administrator privileges might be required. Additionally, the issues described above should not occur if installed in a virtual environment<br/>
 
 # verificationTool User Guide #
-The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the ‘Test’ folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
+The model implements multiple arguments and commands that can be invoked by running them in the terminal. The commands shown here are for the test data provided in the `Test` folder. However, these commands can be used on custom data as well. Additionally, there could be multiple configurations of the available parameters and they can be used in conjunction with other parameters. All of the following commands have been run from the current directory.
 
 ## Predict ##
-:exclamation:**Template Matching Prediction** – python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm<br/>
-:exclamation:**Patch Matching Prediction** - python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm<br/>
-:warning:Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**.<br/>
+**Template Match Prediction** – `python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm`<br/>
+**Patch Match Prediction** - `python verificationTool.py -p ./Test/images/image2Q.jpg ./Test/images/image2R.jpg -mm pm`
+
+Another argument can be added to the command above that specifies either the model used **--model** or the similarity measure **--measure**.<br/>
 For the first command the choices are - ['resnet50', 'resnet101', 'resnet152', 'vgg19', 'inception']. The default is resnet50.<br/>
 An example would be - python verificationTool.py -p ./Test/images/image1Q.jpg ./Test/images/image1R.jpg -mm tm --model resnet152<br/>
 The second command (**--measure**) has 2 choices - ['cc', 'ncc']. These choices represent Correlation Coefficient and Normalized Cross-Correlation respectively.<br/>
