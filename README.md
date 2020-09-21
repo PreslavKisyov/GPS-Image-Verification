@@ -155,4 +155,5 @@ For instance, if the configuration uses only one scale range then all lines must
 **Warnings** - built into python's interpreter (python 3.6.8)<br/>
 **OS** - built into python's interpreter (python 3.6.8)
 
+#
 **All the methods used in this README, as well as all the papers referenced, have been given credit to and have been cited accordingly in the original paper/report of this project!**
