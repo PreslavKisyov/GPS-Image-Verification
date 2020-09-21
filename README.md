@@ -134,5 +134,7 @@ For instance, if the configuration uses only one scale range then all lines must
 **Warnings** - built into python's interpreter (python 3.6.8)<br/>
 **OS** - built into python's interpreter (python 3.6.8)
 
-#
+# Additional Information
+- The paper itself can be found [here](https://github.com/PreslavKisyov/GPS-Image-Verification/blob/master/Report.pdf), and the installation/usage tutorial can be accessed [here](https://github.com/PreslavKisyov/GPS-Image-Verification/blob/master/Appendices.pdf).
+
 **All the methods used in this README, as well as all the papers referenced, have been given credit to and have been cited accordingly in the original paper/report of this project!**
