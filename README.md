@@ -145,7 +145,7 @@ For instance, if the configuration uses only one scale range then all lines must
 
 # List of Used Libraries #
 **Keras** - 2.3.1<br/>
-**Tensorflow** - 2.0.0<br/>
+**Tensorflow** - 2.0.1<br/>
 **NumPy** - 1.16.0<br/>
 **OpenCV** - 3.4.2.16<br/>
 **Sklearn** - 0.22.1<br/>
@@ -155,4 +155,4 @@ For instance, if the configuration uses only one scale range then all lines must
 **Warnings** - built into python's interpreter (python 3.6.8)<br/>
 **OS** - built into python's interpreter (python 3.6.8)
 
-# :exclamation: **All the methods used in this README, as well as all the papers referenced, have been given credit to and have been cited accordingly in the original paper/report of this project!** #
+**All the methods used in this README, as well as all the papers referenced, have been given credit to and have been cited accordingly in the original paper/report of this project!**
