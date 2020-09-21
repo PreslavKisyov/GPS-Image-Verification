@@ -56,15 +56,14 @@ To use the `SURF` method, simply invoke the **-s** command after either any of t
 `python verificationTool.py -test “path to query images” “path to reference images” “path to labels.txt file” -s`
 
 ### Additional Information ###
-The labels text file when extracting or plotting should have the following layout:<br/>
-**SimilarityValue Label**<br/>
-
-**0.50 1**<br/>
-**0.30 0**<br/>
-The labels text file when testing should have the following layout:<br/>
-**Query,Reference,Label**<br/>
-**queryImage.jpg,referenceImage.jpg,0**<br/>
-:warning:**Note:** The full paths are received by the other two arguments when invoking the -test command (query images path, reference images path).
+The labels' text file, when extracting or plotting, should have the following layout:<br/>
+- **SimilarityValue Label**<br/>
+  - **0.50 1**<br/>
+  - **0.30 0**<br/>
+The labels' text file, when testing, should have the following layout:<br/>
+- **Query,Reference,Label**<br/>
+  - **queryImage.jpg,referenceImage.jpg,0**<br/>
+**Note:** The full paths are received by the other two arguments when invoking the -test command (query images path, reference images path).
 
 # thresholdTool User Guide #
 This is the script that iterates over multiple thresholds and picks the best one for the data provided. It requires two files. One with negative sample similarity values and one with positive ones. Additionally, the **-r** command can be invoked to reverse the order of importance. Meaning, lower values will be better. This mode can be invoked depending on the similarity measure used for extracting the similarity values.<br/>
