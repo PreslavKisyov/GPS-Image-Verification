@@ -124,7 +124,7 @@ For instance, if the configuration uses only one scale range then all lines must
 
 # List of Used Libraries #
 **Keras** - 2.3.1<br/>
-**Tensorflow** - 2.0.1<br/>
+**Tensorflow** - 2.0.3<br/>
 **NumPy** - 1.16.0<br/>
 **OpenCV** - 3.4.2.16<br/>
 **Sklearn** - 0.22.1<br/>
